@@ -1,25 +1,64 @@
 // 统计分析页面JavaScript逻辑 - 广西糖业专用
+// 性能优化版本：分批渲染图表，避免页面卡顿
+
+// 全局Chart.js配置 - 禁用动画以提升性能
+Chart.defaults.animation = false;
+Chart.defaults.responsive = true;
+Chart.defaults.maintainAspectRatio = false;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 先渲染表格（快速）
     calculateStatistics();
-    renderCharts();
     renderYearlyTable();
+
+    // 分批渲染图表，避免阻塞主线程
+    renderChartsProgressively();
 });
+
+// 分批渲染图表
+function renderChartsProgressively() {
+    const chartFunctions = [
+        renderYearlyChart,
+        renderSectorChart,
+        renderRegionChart,
+        renderAreaChart,
+        renderTechInnovationChart,
+        renderValueUpgradingChart,
+        renderGreenDevelopmentChart,
+        renderIndustrialParkChart
+    ];
+
+    let index = 0;
+
+    function renderNext() {
+        if (index < chartFunctions.length) {
+            chartFunctions[index]();
+            index++;
+            // 使用 requestAnimationFrame 让浏览器有机会更新UI
+            requestAnimationFrame(renderNext);
+        }
+    }
+
+    // 开始渲染
+    requestAnimationFrame(renderNext);
+}
 
 // 计算统计数据
 function calculateStatistics() {
     // 按产业环节统计
     const sectorStats = {};
-    industryData.forEach(item => {
-        if (!sectorStats[item.sector]) {
-            sectorStats[item.sector] = {
-                count: 0,
-                totalOutput: 0
-            };
-        }
-        sectorStats[item.sector].count++;
-        sectorStats[item.sector].totalOutput += item.annualOutput || 0;
-    });
+    if (typeof industryData !== 'undefined') {
+        industryData.forEach(item => {
+            if (!sectorStats[item.sector]) {
+                sectorStats[item.sector] = {
+                    count: 0,
+                    totalOutput: 0
+                };
+            }
+            sectorStats[item.sector].count++;
+            sectorStats[item.sector].totalOutput += item.annualOutput || 0;
+        });
+    }
 
     // 按地区统计（使用regionSugarData）
     const regionStats = {};
@@ -95,29 +134,6 @@ function renderYearlyTable() {
         `;
     });
     tbody.innerHTML = html;
-}
-
-// 渲染图表
-function renderCharts() {
-    const { sectorStats, regionStats } = calculateStatistics();
-
-    // 历年产量趋势图
-    renderYearlyChart();
-
-    // 产业环节饼图
-    renderSectorChart(sectorStats);
-
-    // 地区柱状图
-    renderRegionChart(regionStats);
-
-    // 种植面积分布图
-    renderAreaChart();
-
-    // PDF数据相关图表
-    renderTechInnovationChart();
-    renderValueUpgradingChart();
-    renderGreenDevelopmentChart();
-    renderIndustrialParkChart();
 }
 
 // 渲染历年产量趋势图
@@ -218,8 +234,21 @@ function renderYearlyChart() {
 }
 
 // 渲染产业环节图表
-function renderSectorChart(stats) {
-    const ctx = document.getElementById('sectorChart').getContext('2d');
+function renderSectorChart() {
+    const ctx = document.getElementById('sectorChart');
+    if (!ctx) return;
+
+    // 计算产业环节统计
+    const stats = {};
+    if (typeof industryData !== 'undefined') {
+        industryData.forEach(item => {
+            if (!stats[item.sector]) {
+                stats[item.sector] = { count: 0, totalOutput: 0 };
+            }
+            stats[item.sector].count++;
+            stats[item.sector].totalOutput += item.annualOutput || 0;
+        });
+    }
 
     const labels = Object.keys(stats);
     const data = labels.map(sector => stats[sector].count);
@@ -234,7 +263,7 @@ function renderSectorChart(stats) {
         'rgba(108, 117, 125, 0.8)'
     ];
 
-    new Chart(ctx, {
+    new Chart(ctx.getContext('2d'), {
         type: 'doughnut',
         data: {
             labels: labels,
@@ -276,8 +305,21 @@ function renderSectorChart(stats) {
 }
 
 // 渲染地区产糖量图表
-function renderRegionChart(stats) {
-    const ctx = document.getElementById('regionChart').getContext('2d');
+function renderRegionChart() {
+    const ctx = document.getElementById('regionChart');
+    if (!ctx) return;
+
+    // 计算地区统计
+    const stats = {};
+    if (typeof regionSugarData !== 'undefined') {
+        regionSugarData.forEach(item => {
+            stats[item.region] = {
+                sugarOutput: item.sugarOutput,
+                factories: item.factories,
+                caneArea: item.caneArea
+            };
+        });
+    }
 
     const sorted = Object.entries(stats)
         .sort((a, b) => b[1].sugarOutput - a[1].sugarOutput);
@@ -285,7 +327,7 @@ function renderRegionChart(stats) {
     const labels = sorted.map(item => item[0].replace('市', ''));
     const data = sorted.map(item => item[1].sugarOutput / 10000); // 转换为万吨
 
-    new Chart(ctx, {
+    new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: labels,
@@ -460,7 +502,7 @@ function renderTechInnovationChart() {
 // 渲染价值高端化图表
 function renderValueUpgradingChart() {
     const ctx = document.getElementById('valueUpgradingChart');
-    if (!ctx || typeof valueUpgradingData === 'undefined') return;
+    if (!ctx || typeof valueUpgradingData === 'undefined' || valueUpgradingData.length === 0) return;
 
     const years = valueUpgradingData.map(item => item.year);
 
@@ -470,7 +512,7 @@ function renderValueUpgradingChart() {
             labels: years,
             datasets: [
                 {
-                    label: '循环经济产值(亿元)',
+                    label: '崇左循环经济产值(亿元)',
                     data: valueUpgradingData.map(item => item.chongzuoCircularValue),
                     backgroundColor: 'rgba(25, 135, 84, 0.8)',
                     borderColor: 'rgba(25, 135, 84, 1)',
@@ -478,8 +520,8 @@ function renderValueUpgradingChart() {
                     yAxisID: 'y'
                 },
                 {
-                    label: '环保产品产能(万吨)',
-                    data: valueUpgradingData.map(item => item.laibinEcoProductCapacity),
+                    label: '来宾环保餐具产能(万吨)',
+                    data: valueUpgradingData.map(item => item.laibinEcoCapacity),
                     backgroundColor: 'rgba(13, 110, 253, 0.8)',
                     borderColor: 'rgba(13, 110, 253, 1)',
                     borderWidth: 1,
@@ -490,6 +532,12 @@ function renderValueUpgradingChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10
+                }
+            },
             scales: {
                 y: {
                     type: 'linear',
@@ -497,7 +545,10 @@ function renderValueUpgradingChart() {
                     position: 'left',
                     title: {
                         display: true,
-                        text: '循环经济产值(亿元)'
+                        text: '产值(亿元)',
+                        font: {
+                            size: 11
+                        }
                     },
                     beginAtZero: true
                 },
@@ -507,7 +558,10 @@ function renderValueUpgradingChart() {
                     position: 'right',
                     title: {
                         display: true,
-                        text: '环保产品产能(万吨)'
+                        text: '产能(万吨)',
+                        font: {
+                            size: 11
+                        }
                     },
                     beginAtZero: true,
                     grid: {
@@ -518,6 +572,17 @@ function renderValueUpgradingChart() {
             plugins: {
                 legend: {
                     position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const year = context.label;
+                            const value = context.parsed.y;
+                            const label = context.dataset.label;
+                            let suffix = year >= 2025 ? ' (目标)' : '';
+                            return `${label}: ${value}${suffix}`;
+                        }
+                    }
                 }
             }
         }
