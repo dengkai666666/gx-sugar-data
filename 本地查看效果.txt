@@ -1,0 +1,5 @@
+本地自测（推荐用本地服务而非双击）：
+
+  - 在 D:\Desktop\农业网站\agriculture-website 运行：python -m http.server 8000
+  - 浏览器打开：http://localhost:8000/index.html（再点到其它页面）
+  - F12 → Network 确认这些资源都能 200/304：cdn.bootcdn.net/...
