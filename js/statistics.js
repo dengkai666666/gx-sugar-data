@@ -1,18 +1,54 @@
 // 统计分析页面JavaScript逻辑 - 广西糖业专用
 // 性能优化版本：分批渲染图表，避免页面卡顿
 
-// 全局Chart.js配置 - 禁用动画以提升性能
-Chart.defaults.animation = false;
-Chart.defaults.responsive = true;
-Chart.defaults.maintainAspectRatio = false;
+// 重试计数器
+let retryCount = 0;
+const maxRetries = 10;
 
-document.addEventListener('DOMContentLoaded', function() {
+// 等待Chart.js和数据加载完成后再初始化
+function initCharts() {
+    // 检查Chart.js是否已加载
+    if (typeof Chart === 'undefined') {
+        retryCount++;
+        if (retryCount < maxRetries) {
+            console.warn('Chart.js 尚未加载，500ms后重试... (' + retryCount + '/' + maxRetries + ')');
+            setTimeout(initCharts, 500);
+        } else {
+            console.error('Chart.js 加载失败，请检查网络连接后刷新页面');
+        }
+        return;
+    }
+
+    // 检查数据是否已加载
+    if (typeof yearlyProductionData === 'undefined' || typeof regionSugarData === 'undefined') {
+        retryCount++;
+        if (retryCount < maxRetries) {
+            console.warn('数据尚未加载，500ms后重试... (' + retryCount + '/' + maxRetries + ')');
+            setTimeout(initCharts, 500);
+        } else {
+            console.error('数据加载失败，请刷新页面');
+        }
+        return;
+    }
+
+    console.log('Chart.js 和数据加载成功，开始渲染图表...');
+
+    // 全局Chart.js配置 - 禁用动画以提升性能
+    Chart.defaults.animation = false;
+    Chart.defaults.responsive = true;
+    Chart.defaults.maintainAspectRatio = false;
+
     // 先渲染表格（快速）
     calculateStatistics();
     renderYearlyTable();
 
     // 分批渲染图表，避免阻塞主线程
     renderChartsProgressively();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 延迟100ms确保其他脚本加载完成
+    setTimeout(initCharts, 100);
 });
 
 // 分批渲染图表
