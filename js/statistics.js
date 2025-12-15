@@ -118,15 +118,35 @@ function calculateStatistics() {
 // 渲染产业环节统计表
 function renderSectorTable(stats) {
     const tbody = document.getElementById('sectorStatsTable');
-    const sorted = Object.entries(stats).sort((a, b) => b[1].count - a[1].count);
+
+    // 按产业链顺序排列：种植→制糖→贸易→科研
+    const sectorOrder = ['种植', '制糖', '贸易', '科研'];
+    const sorted = sectorOrder
+        .filter(sector => stats[sector]) // 只保留存在的环节
+        .map(sector => [sector, stats[sector]]);
 
     let html = '';
     sorted.forEach(([sector, data]) => {
+        // 根据产业环节标注不同的单位和说明
+        let outputLabel = '';
+        let note = '';
+
+        if (sector === '制糖') {
+            outputLabel = formatNumber(data.totalOutput) + ' <small class="text-muted">(食糖)</small>';
+            note = '<small class="text-info">10家龙头</small>';
+        } else if (sector === '种植') {
+            outputLabel = formatNumber(data.totalOutput) + ' <small class="text-muted">(糖料蔗)</small>';
+            note = '<small class="text-info">代表区域</small>';
+        } else {
+            outputLabel = formatNumber(data.totalOutput);
+            note = '';
+        }
+
         html += `
             <tr>
-                <td><strong>${sector}</strong></td>
+                <td><strong>${sector}</strong> ${note}</td>
                 <td>${data.count}</td>
-                <td>${formatNumber(data.totalOutput)}</td>
+                <td>${outputLabel}</td>
             </tr>
         `;
     });
@@ -631,6 +651,7 @@ function renderGreenDevelopmentChart() {
     if (!ctx || typeof greenDevelopmentData === 'undefined') return;
 
     const years = greenDevelopmentData.map(item => item.year);
+    const caneLeafData = greenDevelopmentData.map(item => item.caneLeafUtilization);
 
     new Chart(ctx.getContext('2d'), {
         type: 'line',
@@ -639,15 +660,25 @@ function renderGreenDevelopmentChart() {
             datasets: [
                 {
                     label: '蔗叶离田综合利用率(%)',
-                    data: greenDevelopmentData.map(item => item.caneLeafUtilization),
+                    data: caneLeafData,
                     borderColor: 'rgba(25, 135, 84, 1)',
                     backgroundColor: 'rgba(25, 135, 84, 0.2)',
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 5,
-                    pointBackgroundColor: 'rgba(25, 135, 84, 1)',
+                    pointRadius: years.map((year, index) => year >= 2025 ? 6 : 5),
+                    pointBackgroundColor: years.map((year, index) =>
+                        year >= 2025 ? 'rgba(255, 193, 7, 1)' : 'rgba(25, 135, 84, 1)'
+                    ),
                     pointBorderColor: '#fff',
-                    pointBorderWidth: 2
+                    pointBorderWidth: 2,
+                    segment: {
+                        borderDash: ctx => {
+                            // 2024到2025之间的线段使用虚线表示目标
+                            const currentIndex = ctx.p0DataIndex;
+                            const nextYear = years[currentIndex + 1];
+                            return nextYear >= 2025 ? [5, 5] : [];
+                        }
+                    }
                 }
             ]
         },
@@ -671,10 +702,13 @@ function renderGreenDevelopmentChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `蔗叶离田利用率: ${context.parsed.y}%`;
+                            const year = context.label;
+                            const value = context.parsed.y;
+                            const suffix = year >= 2025 ? ' (十四五目标)' : '';
+                            return `蔗叶离田利用率: ${value}%${suffix}`;
                         },
                         afterLabel: function(context) {
-                            return '蔗渣/糖蜜利用率: 100%';
+                            return '蔗渣/糖蜜/滤泥利用率: 100%';
                         }
                     }
                 }

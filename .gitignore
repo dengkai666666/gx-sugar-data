@@ -1,3 +1,4 @@
 #忽略不需要跟踪的文件
 糖业docx(1).pdf
 .claude
+.playwright-mcp

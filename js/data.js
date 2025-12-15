@@ -151,8 +151,44 @@ const industryData = [
         annualOutput: 150000,
         contact: "2024年获自治区级绿色工厂",
         updatedAt: "2024-10-28"
+    },
+    {
+        id: 16,
+        companyName: "广西大学甘蔗生物育种研究中心",
+        sector: "科研",
+        region: "南宁市",
+        product: "甘蔗基因组研究、分子育种",
+        annualOutput: 0,
+        contact: "亚热带农业生物资源保护与利用国家重点实验室",
+        updatedAt: "2024-12-15"
+    },
+    {
+        id: 17,
+        companyName: "广西南亚热带农业科学研究所",
+        sector: "科研",
+        region: "崇左市",
+        product: "甘蔗新品种选育与保护",
+        annualOutput: 0,
+        contact: "开展甘蔗育种和技术研发",
+        updatedAt: "2024-12-15"
     }
 ];
+
+// 2024/25榨季产业整体统计数据（经网络搜索核实的官方数据）
+const industryOverview = {
+    season: "2024/25",
+    sugarFactories: 74,           // 开机糖厂总数（来源：泛糖科技）
+    totalSugarOutput: 6465000,    // 总产糖量(吨)（来源：央广网官方数据 646.5万吨）
+    plantingArea: 1135,           // 种植面积(万亩)（来源：央广网官方数据）
+    researchInstitutes: 3,        // 主要科研机构数
+    researchInstitutesList: [
+        "广西农业科学院甘蔗研究所",
+        "广西大学甘蔗生物育种研究中心",
+        "广西南亚热带农业科学研究所"
+    ],
+    dataSource: "广西壮族自治区政府新闻发布会（2025年7月2日）、泛糖科技、糖网",
+    lastUpdated: "2024-12-15"
+};
 
 // 广西糖业研究成果数据 - 基于2024年最新科研动态（所有内容均经联网核实）
 const researchData = [
@@ -232,7 +268,7 @@ const announcementData = [
 // 数据来源：新华网、糖网、各市农业农村局官方发布
 const regionSugarData = [
     { region: "崇左市", sugarOutput: 2200000, caneArea: 320, factories: 11 }, // 220万吨（2024/25预计）
-    { region: "来宾市", sugarOutput: 1200000, caneArea: 165, factories: 6 }, // 120万吨（2024/25预计）
+    { region: "来宾市", sugarOutput: 1200000, caneArea: 165, factories: 13 }, // 120万吨（2024/25预计）
     { region: "南宁市", sugarOutput: 1000000, caneArea: 180, factories: 5 }, // 约估算
     { region: "柳州市", sugarOutput: 550000, caneArea: 111, factories: 4 }, // 约估算
     { region: "贵港市", sugarOutput: 320000, caneArea: 55, factories: 2 }, // 约估算
@@ -244,14 +280,14 @@ const regionSugarData = [
 ];
 
 // 广西糖业历年产量数据（用于趋势展示）
-// 数据来源：糖网、泛糖科技、广西发改委官方发布
+// 数据来源：糖网、新华财经、中国糖业协会、广西新闻发布会等公开渠道（截至 2025-12-15）
 const yearlyProductionData = [
-    { season: "2019/20", sugarOutput: 600.44, caneInput: 4579, sugarRate: 13.11 }, // 来源：糖网
-    { season: "2020/21", sugarOutput: 628.79, caneInput: 4921, sugarRate: 12.78 }, // 来源：糖网
-    { season: "2021/22", sugarOutput: 611.94, caneInput: 5019.41, sugarRate: 12.18 }, // 来源：糖网
-    { season: "2022/23", sugarOutput: 527.03, caneInput: 4122, sugarRate: 12.78 }, // 来源：泛糖科技
-    { season: "2023/24", sugarOutput: 618.14, caneInput: 5118.01, sugarRate: 12.08 }, // 来源：广西发改委
-    { season: "2024/25", sugarOutput: 646.50, caneInput: 4859.54, sugarRate: 13.30 } // 来源：糖网、泛糖科技
+    { season: "2019/20", sugarOutput: 600.00, caneInput: 4579.00, sugarRate: 13.11 }, // yntw.com，2020/04/15
+    { season: "2020/21", sugarOutput: 628.79, caneInput: 4921.00, sugarRate: 12.78 }, // yntw.com，2021/04/25
+    { season: "2021/22", sugarOutput: 611.94, caneInput: 5019.41, sugarRate: 12.19 }, // 新华财经 2022/05/06；yntw.com 2022/05/06
+    { season: "2022/23", sugarOutput: 527.03, caneInput: 4122.13, sugarRate: 12.79 }, // yntw.com 2023/05/08；中国糖业协会
+    { season: "2023/24", sugarOutput: 618.14, caneInput: 5118.01, sugarRate: 12.08 }, // yntw.com 2024/05/02
+    { season: "2024/25", sugarOutput: 646.50, caneInput: 4859.54, sugarRate: 13.30 }  // yntw.com 2025/05/07
 ];
 
 // 广西糖业科技创新指标（公开口径：规划基数 + 最新口径）
@@ -290,7 +326,7 @@ const valueUpgradingData = [
 ];
 
 // 广西糖业绿色生态化指标
-// 数据来源：广西糖业发展"十四五"规划、央广网、农小蜂
+// 数据来源：广西糖业发展"十四五"规划、央广网、泛糖科技
 // 注：蔗渣、糖蜜、滤泥利用率100%已由多方来源确认
 const greenDevelopmentData = [
     {
@@ -304,6 +340,12 @@ const greenDevelopmentData = [
         caneLeafUtilization: 40, // 蔗叶利用率突破40% - 央广网报道
         bagasseUtilization: 100, // 蔗渣利用率 - 已核实
         molassesUtilization: 100 // 糖蜜利用率 - 已核实
+    },
+    {
+        year: 2025,
+        caneLeafUtilization: 45, // 蔗叶利用率目标 - "十四五"规划目标
+        bagasseUtilization: 100, // 蔗渣利用率目标
+        molassesUtilization: 100 // 糖蜜利用率目标
     }
 ];
 

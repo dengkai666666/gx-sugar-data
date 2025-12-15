@@ -91,7 +91,8 @@
                 <div class="col-lg-6 mb-4">
                     <div class="card shadow-sm">
                         <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="bi bi-pie-chart"></i> 按产业环节统计</h5>
+                            <h5 class="mb-0"><i class="bi bi-pie-chart"></i> 主要企业代表统计</h5>
+                            <small class="opacity-75">本表展示精选龙头企业，非全区统计</small>
                         </div>
                         <div class="card-body">
                             <canvas id="sectorChart"></canvas>
@@ -101,13 +102,46 @@
                                 <thead>
                                     <tr>
                                         <th>产业环节</th>
-                                        <th>企业数量</th>
-                                        <th>总产量(吨)</th>
+                                        <th>代表企业</th>
+                                        <th>产能(吨)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="sectorStatsTable">
                                 </tbody>
                             </table>
+                            <div class="alert alert-warning mb-0 mt-2 py-2">
+                                <small>
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <strong>说明：</strong>制糖产能为精选10家龙头企业统计；
+                                    种植为糖料蔗产量(吨)非食糖产量；
+                                    全区完整数据见下方统计卡片
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-body border-top bg-light">
+                            <h6 class="text-success mb-2"><i class="bi bi-info-circle"></i> 2024/25榨季完整统计</h6>
+                            <div class="row text-center">
+                                <div class="col-6 mb-2">
+                                    <strong class="text-primary">74家</strong>
+                                    <br><small class="text-muted">开机糖厂总数</small>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <strong class="text-primary">646.5万吨</strong>
+                                    <br><small class="text-muted">全区总产糖量</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong class="text-primary">1135万亩</strong>
+                                    <br><small class="text-muted">种植面积</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong class="text-primary">3家</strong>
+                                    <br><small class="text-muted">主要科研机构</small>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-0 mt-3">
+                                <i class="bi bi-clock-history"></i> 数据更新：2024年12月 |
+                                数据来源：广西壮族自治区政府、泛糖科技、糖网
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -278,10 +312,29 @@
                             <canvas id="greenDevelopmentChart" height="100"></canvas>
                         </div>
                         <div class="card-body border-top mt-auto">
-                            <div class="alert alert-success mb-0">
+                            <div class="alert alert-success mb-2">
                                 <strong>2024年蔗叶离田综合利用率突破40%</strong><br>
-                                <small>蔗渣、糖蜜利用率持续保持100%</small>
+                                <small>蔗渣、糖蜜、滤泥利用率持续保持100%<br>
+                                "十四五"规划目标：2025年蔗叶利用率达45%</small>
                             </div>
+                            <div class="row text-center g-2">
+                                <div class="col-6">
+                                    <div class="border rounded p-2 bg-light">
+                                        <h6 class="text-success mb-0">30+</h6>
+                                        <small class="text-muted">综合利用产品种类</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded p-2 bg-light">
+                                        <h6 class="text-primary mb-0">40%+</h6>
+                                        <small class="text-muted">综合利用产值占比</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-0 mt-2">
+                                <i class="bi bi-check-circle text-success"></i> 环保餐具、酵母、生物肥等高附加值产品<br>
+                                <i class="bi bi-check-circle text-success"></i> 水循环利用覆盖所有糖厂
+                            </p>
                         </div>
                     </div>
                 </div>
