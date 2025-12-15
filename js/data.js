@@ -264,20 +264,13 @@ const announcementData = [
     }
 ];
 
-// 广西各市糖业统计数据 - 基于2024/25榨季官方预测数据
-// 数据来源：新华网、糖网、各市农业农村局官方发布
+// 广西各市糖业统计数据 - 仅含官方来源确认数据
+// 数据来源：新华网、糖网、泛糖科技官方发布（2024/25榨季）
 const regionSugarData = [
-    { region: "崇左市", sugarOutput: 2200000, caneArea: 320, factories: 11 }, // 220万吨（2024/25预计）
-    { region: "来宾市", sugarOutput: 1200000, caneArea: 165, factories: 13 }, // 120万吨（2024/25预计）
-    { region: "南宁市", sugarOutput: 1000000, caneArea: 180, factories: 5 }, // 约估算
-    { region: "柳州市", sugarOutput: 550000, caneArea: 111, factories: 4 }, // 约估算
-    { region: "贵港市", sugarOutput: 320000, caneArea: 55, factories: 2 }, // 约估算
-    { region: "北海市", sugarOutput: 280000, caneArea: 48, factories: 3 }, // 约估算
-    { region: "钦州市", sugarOutput: 250000, caneArea: 45, factories: 3 }, // 约估算
-    { region: "百色市", sugarOutput: 220000, caneArea: 42, factories: 2 }, // 约估算
-    { region: "河池市", sugarOutput: 180000, caneArea: 35, factories: 2 }, // 约估算
-    { region: "玉林市", sugarOutput: 120000, caneArea: 28, factories: 1 } // 约估算
+    { region: "崇左市", sugarOutput: 2200000, caneArea: 320, factories: 11 }, // 新华网、糖网确认
+    { region: "来宾市", sugarOutput: 1200000, caneArea: 182, factories: 13 }  // 泛糖科技、糖网确认
 ];
+// 注：其他地市产量数据暂无官方来源，不予展示
 
 // 广西糖业历年产量数据（用于趋势展示）
 // 数据来源：糖网、新华财经、中国糖业协会、广西新闻发布会等公开渠道（截至 2025-12-15）

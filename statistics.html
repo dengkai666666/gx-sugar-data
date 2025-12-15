@@ -89,7 +89,7 @@
             <div class="row">
                 <!-- 按产业环节统计 -->
                 <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm h-100">
                         <div class="card-header bg-success text-white">
                             <h5 class="mb-0"><i class="bi bi-pie-chart"></i> 主要企业代表统计</h5>
                             <small class="opacity-75">本表展示精选龙头企业，非全区统计</small>
@@ -148,9 +148,10 @@
 
                 <!-- 按地区统计 -->
                 <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm h-100">
                         <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="bi bi-geo-alt"></i> 各市食糖产量分布</h5>
+                            <h5 class="mb-0"><i class="bi bi-geo-alt"></i> 主要产糖市统计</h5>
+                            <small class="opacity-75">仅展示有官方来源确认的数据</small>
                         </div>
                         <div class="card-body">
                             <canvas id="regionChart"></canvas>
@@ -160,13 +161,25 @@
                                 <thead>
                                     <tr>
                                         <th>地区</th>
-                                        <th>产糖量(吨)</th>
+                                        <th>产糖量(万吨)</th>
                                         <th>糖厂数量</th>
                                     </tr>
                                 </thead>
                                 <tbody id="regionStatsTable">
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="card-body border-top">
+                            <div class="alert alert-info mb-0 py-2">
+                                <small>
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>全区合计：</strong>74家糖厂，产糖646.5万吨<br>
+                                    崇左、来宾两市产糖量占全区52.6%
+                                </small>
+                            </div>
+                            <p class="text-muted small mb-0 mt-2">
+                                <i class="bi bi-link-45deg"></i> 数据来源：<a href="https://www.yntw.com/2024/11/32154.html" target="_blank">糖网</a>、<a href="https://www.hisugar.com/home/articleContent?id=2024111809040048548894" target="_blank">泛糖科技</a>
+                            </p>
                         </div>
                     </div>
                 </div>

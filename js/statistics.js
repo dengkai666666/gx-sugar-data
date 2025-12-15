@@ -161,10 +161,12 @@ function renderRegionTable(stats) {
 
     let html = '';
     sorted.forEach(([region, data]) => {
+        // 将吨转换为万吨显示
+        const outputInWanTon = (data.sugarOutput / 10000).toFixed(0);
         html += `
             <tr>
                 <td><strong>${region}</strong></td>
-                <td>${formatNumber(data.sugarOutput)}</td>
+                <td>${outputInWanTon}</td>
                 <td>${data.factories}</td>
             </tr>
         `;
