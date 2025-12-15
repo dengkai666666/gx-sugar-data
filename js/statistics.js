@@ -180,12 +180,16 @@ function renderYearlyTable() {
     let html = '';
     yearlyProductionData.forEach(item => {
         const isLatest = item.season === '2024/25';
+        // 统一小数位格式：产糖量2位，入榨量2位，产糖率2位
+        const sugarOutput = item.sugarOutput.toFixed(2);
+        const caneInput = item.caneInput.toFixed(2);
+        const sugarRate = item.sugarRate.toFixed(2);
         html += `
             <tr class="${isLatest ? 'table-success' : ''}">
                 <td><strong>${item.season}</strong>${isLatest ? ' <span class="badge bg-success">最新</span>' : ''}</td>
-                <td>${item.sugarOutput}</td>
-                <td>${item.caneInput}</td>
-                <td>${item.sugarRate}%</td>
+                <td>${sugarOutput}</td>
+                <td>${caneInput}</td>
+                <td>${sugarRate}%</td>
             </tr>
         `;
     });

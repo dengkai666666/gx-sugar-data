@@ -286,7 +286,7 @@ const yearlyProductionData = [
     { season: "2020/21", sugarOutput: 628.79, caneInput: 4921.00, sugarRate: 12.78 }, // yntw.com，2021/04/25
     { season: "2021/22", sugarOutput: 611.94, caneInput: 5019.41, sugarRate: 12.19 }, // 新华财经 2022/05/06；yntw.com 2022/05/06
     { season: "2022/23", sugarOutput: 527.03, caneInput: 4122.13, sugarRate: 12.79 }, // yntw.com 2023/05/08；中国糖业协会
-    { season: "2023/24", sugarOutput: 618.14, caneInput: 5118.01, sugarRate: 12.08 }, // yntw.com 2024/05/02
+    { season: "2023/24", sugarOutput: 618.14, caneInput: 5118.00, sugarRate: 12.08 }, // yntw.com 2024/05/02；广西新闻发布会口径
     { season: "2024/25", sugarOutput: 646.50, caneInput: 4859.54, sugarRate: 13.30 }  // yntw.com 2025/05/07
 ];
 
