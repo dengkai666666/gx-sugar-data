@@ -331,19 +331,25 @@ const valueUpgradingData = [
 const greenDevelopmentData = [
     {
         year: 2020,
+        label: '2020年',
         caneLeafUtilization: 25, // 蔗叶离田综合利用率(%) - 规划基数
+        isTarget: false,
         bagasseUtilization: 100, // 蔗渣利用率(%) - 已核实
         molassesUtilization: 100 // 糖蜜利用率(%) - 已核实
     },
     {
         year: 2024,
+        label: '2024年',
         caneLeafUtilization: 40, // 蔗叶利用率突破40% - 央广网报道
+        isTarget: false,
         bagasseUtilization: 100, // 蔗渣利用率 - 已核实
         molassesUtilization: 100 // 糖蜜利用率 - 已核实
     },
     {
         year: 2025,
+        label: '2025年目标',
         caneLeafUtilization: 45, // 蔗叶利用率目标 - "十四五"规划目标
+        isTarget: true,
         bagasseUtilization: 100, // 蔗渣利用率目标
         molassesUtilization: 100 // 糖蜜利用率目标
     }

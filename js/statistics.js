@@ -650,45 +650,44 @@ function renderGreenDevelopmentChart() {
     const ctx = document.getElementById('greenDevelopmentChart');
     if (!ctx || typeof greenDevelopmentData === 'undefined') return;
 
-    const years = greenDevelopmentData.map(item => item.year);
-    const caneLeafData = greenDevelopmentData.map(item => item.caneLeafUtilization);
+    const labels = greenDevelopmentData.map(item => item.label);
+    const values = greenDevelopmentData.map(item => item.caneLeafUtilization);
+    const colors = greenDevelopmentData.map(item =>
+        item.isTarget ? 'rgba(255, 193, 7, 0.8)' : 'rgba(25, 135, 84, 0.8)'
+    );
+    const borderColors = greenDevelopmentData.map(item =>
+        item.isTarget ? 'rgba(255, 193, 7, 1)' : 'rgba(25, 135, 84, 1)'
+    );
 
-    new Chart(ctx.getContext('2d'), {
-        type: 'line',
+    const chart = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
         data: {
-            labels: years,
+            labels: labels,
             datasets: [
                 {
                     label: '蔗叶离田综合利用率(%)',
-                    data: caneLeafData,
-                    borderColor: 'rgba(25, 135, 84, 1)',
-                    backgroundColor: 'rgba(25, 135, 84, 0.2)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: years.map((year, index) => year >= 2025 ? 6 : 5),
-                    pointBackgroundColor: years.map((year, index) =>
-                        year >= 2025 ? 'rgba(255, 193, 7, 1)' : 'rgba(25, 135, 84, 1)'
-                    ),
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    segment: {
-                        borderDash: ctx => {
-                            // 2024到2025之间的线段使用虚线表示目标
-                            const currentIndex = ctx.p0DataIndex;
-                            const nextYear = years[currentIndex + 1];
-                            return nextYear >= 2025 ? [5, 5] : [];
-                        }
-                    }
+                    data: values,
+                    backgroundColor: colors,
+                    borderColor: borderColors,
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    barThickness: 60
                 }
             ]
         },
         options: {
+            indexAxis: 'x',
             responsive: true,
             maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true,
                     max: 50,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    },
                     title: {
                         display: true,
                         text: '利用率(%)'
@@ -702,10 +701,10 @@ function renderGreenDevelopmentChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            const year = context.label;
-                            const value = context.parsed.y;
-                            const suffix = year >= 2025 ? ' (十四五目标)' : '';
-                            return `蔗叶离田利用率: ${value}%${suffix}`;
+                            const index = context.dataIndex;
+                            const dataPoint = greenDevelopmentData[index];
+                            const suffix = dataPoint.isTarget ? ' (规划目标)' : ' (实际值)';
+                            return `蔗叶离田利用率: ${context.parsed.y}%${suffix}`;
                         },
                         afterLabel: function(context) {
                             return '蔗渣/糖蜜/滤泥利用率: 100%';
@@ -713,7 +712,37 @@ function renderGreenDevelopmentChart() {
                     }
                 }
             }
-        }
+        },
+        plugins: [
+            {
+                id: 'textCenter',
+                afterDatasetsDraw(chart) {
+                    const {ctx, data, chartArea: {left, top, width, height}} = chart;
+                    ctx.save();
+
+                    data.datasets.forEach((dataset, datasetIndex) => {
+                        const meta = chart.getDatasetMeta(datasetIndex);
+                        meta.data.forEach((bar, index) => {
+                            const value = dataset.data[index];
+
+                            // 绘制数值标签在柱子顶部
+                            ctx.fillStyle = '#000';
+                            ctx.font = 'bold 16px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+                            ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+                            ctx.shadowBlur = 3;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+
+                            // 文字位置：柱子顶部上方8像素
+                            ctx.fillText(value + '%', bar.x, bar.y - 8);
+                        });
+                    });
+                    ctx.restore();
+                }
+            }
+        ]
     });
 }
 
