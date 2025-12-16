@@ -113,7 +113,7 @@ function calculateStatistics() {
 
     // 渲染表格
     renderSectorTable(sectorStats);
-    renderRegionTable(regionStats);
+    renderRegionHistoryTable();
     renderRegionSummary(regionStats);
 
     return { sectorStats, regionStats };
@@ -158,30 +158,53 @@ function renderSectorTable(stats) {
 }
 
 // 渲染地区统计表
-function renderRegionTable(stats) {
+function renderRegionHistoryTable() {
     const tbody = document.getElementById('regionStatsTable');
-    const sorted = Object.entries(stats)
-        .sort((a, b) => b[1].sugarOutput - a[1].sugarOutput);
+    if (!tbody) return;
+
+    const rows = (typeof regionSugarHistoryData !== 'undefined' && Array.isArray(regionSugarHistoryData) && regionSugarHistoryData.length)
+        ? regionSugarHistoryData
+        : (typeof regionSugarData !== 'undefined' ? regionSugarData : []);
+
+    const seasonKey = (season) => {
+        const match = (season || '').match(/^(\d{4})/);
+        return match ? Number(match[1]) : -1;
+    };
+
+    const typeBadge = (type) => {
+        if (!type) return '';
+        if (type.includes('入榨')) return '入榨';
+        if (type.includes('进厂')) return '进厂';
+        if (type.includes('产量')) return '产量';
+        return type.length > 6 ? type.slice(0, 6) : type;
+    };
+
+    const sorted = [...rows].sort((a, b) => {
+        const bySeason = seasonKey(b.season) - seasonKey(a.season);
+        if (bySeason !== 0) return bySeason;
+        return (b.sugarOutput || 0) - (a.sugarOutput || 0);
+    });
 
     let html = '';
-    sorted.forEach(([region, data]) => {
-        // 将吨转换为万吨显示（统一保留2位小数，末尾补0）
-        const sugarOutputWanTon = (data.sugarOutput / 10000).toFixed(2);
-        const caneVolumeWanTon = (typeof data.caneVolume === 'number')
-            ? (data.caneVolume / 10000).toFixed(2)
-            : '—';
-        const factoriesText = (typeof data.factories === 'number') ? data.factories : '—';
-        const seasonText = data.season || '—';
+    sorted.forEach((row) => {
+        const sugarOutputWanTon = (typeof row.sugarOutput === 'number') ? (row.sugarOutput / 10000).toFixed(2) : '—';
+        const caneValueWanTon = (typeof row.caneVolume === 'number') ? (row.caneVolume / 10000).toFixed(2) : '—';
+        const caneType = typeBadge(row.caneVolumeType);
+        const caneCell = caneType ? `${caneValueWanTon} <small class="text-muted">${caneType}</small>` : caneValueWanTon;
+        const factoriesText = (typeof row.factories === 'number') ? row.factories : '—';
+        const seasonText = row.season || '—';
+
         html += `
             <tr>
-                <td><strong>${region}</strong></td>
+                <td><strong>${row.region}</strong></td>
                 <td>${sugarOutputWanTon}</td>
-                <td>${caneVolumeWanTon}</td>
+                <td>${caneCell}</td>
                 <td>${factoriesText}</td>
                 <td>${seasonText}</td>
             </tr>
         `;
     });
+
     tbody.innerHTML = html;
 }
 

@@ -293,6 +293,24 @@ const regionSugarData = [
 ];
 // 注：其他地市产量数据若缺少可核验公开来源，不予展示
 
+// “主要产糖市统计”表格用历史数据（支持多榨季行），条形图仍使用 regionSugarData 的口径
+// 说明：部分年份仅能核验到“食糖产量”，若缺少糖料蔗量/糖厂数量则用 null
+// 数据来源：
+// - 崇左 2021/22 食糖：中食新闻网转载（崇左市食糖产量约240万吨）
+//   https://www.cfsn.cn/front/web/site.newshow?newsid=53781
+// - 崇左 2021/22 原料蔗入榨量：农业农村部网站（崇左市2021/22榨季进厂原料蔗1953.92万吨）
+//   https://www.moa.gov.cn/xw/qg/202204/t20220425_6397010.htm
+// - 来宾 2024/25 食糖：光明日报（来宾2024/2025榨季食糖产量117.2万吨）
+//   https://share.gmw.cn/gy/2025-11/24/content_38178323.htm
+const regionSugarHistoryData = [
+    // 崇左
+    { region: "崇左市", season: "2021/22", sugarOutput: 2400000, caneVolume: 19539200, caneVolumeType: "原料蔗入榨量", factories: null },
+    { region: "崇左市", season: "2023/24", sugarOutput: 2180900, caneVolume: 17250500, caneVolumeType: "糖料蔗产量", factories: null },
+    // 来宾
+    { region: "来宾市", season: "2023/24", sugarOutput: 1101000, caneVolume: 9008300, caneVolumeType: "进厂糖料蔗", factories: 14 },
+    { region: "来宾市", season: "2024/25", sugarOutput: 1172000, caneVolume: null, caneVolumeType: null, factories: null }
+];
+
 // 广西糖业历年产量数据（用于趋势展示）
 // 数据来源：糖网、新华财经、中国糖业协会、广西新闻发布会等公开渠道（截至 2025-12-15）
 const yearlyProductionData = [
