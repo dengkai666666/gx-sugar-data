@@ -334,4 +334,16 @@ main {
     height: 14px;
 }
 
+/* Modernization KPI cards */
+.modernization-card .kpi-metrics h5,
+.modernization-card .kpi-metrics h6 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.modernization-card .kpi-metrics small {
+    font-size: 0.8rem;
+}
+
 
