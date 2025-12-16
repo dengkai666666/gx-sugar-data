@@ -364,4 +364,16 @@ main {
     font-size: 0.8rem;
 }
 
+/* 统一产业链现代化指标图表高度 */
+.modernization-card .card-body:first-of-type {
+    height: 260px;
+    padding: 1rem 1rem 0.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.modernization-card canvas {
+    max-height: 220px !important;
+}
+
 

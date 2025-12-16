@@ -628,8 +628,8 @@ function renderTechInnovationChart() {
             },
             scales: {
                 y: {
-                    beginAtZero: false,
-                    min: 60,
+                    beginAtZero: true,
+                    min: 0,
                     max: 100,
                     title: {
                         display: true,
@@ -704,7 +704,8 @@ function renderValueUpgradingChart() {
                             size: 11
                         }
                     },
-                    beginAtZero: true
+                    beginAtZero: true,
+                    max: 80
                 },
                 y1: {
                     type: 'linear',
@@ -718,6 +719,7 @@ function renderValueUpgradingChart() {
                         }
                     },
                     beginAtZero: true,
+                    max: 40,
                     grid: {
                         drawOnChartArea: false
                     }
