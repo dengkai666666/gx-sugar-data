@@ -294,6 +294,7 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
+    padding-top: 56px;
 }
 
 main {
