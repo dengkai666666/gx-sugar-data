@@ -102,7 +102,10 @@ function calculateStatistics() {
         regionSugarData.forEach(item => {
             regionStats[item.region] = {
                 sugarOutput: item.sugarOutput,
+                caneVolume: item.caneVolume,
+                caneVolumeType: item.caneVolumeType,
                 factories: item.factories,
+                season: item.season,
                 caneArea: item.caneArea
             };
         });
@@ -111,6 +114,7 @@ function calculateStatistics() {
     // 渲染表格
     renderSectorTable(sectorStats);
     renderRegionTable(regionStats);
+    renderRegionSummary(regionStats);
 
     return { sectorStats, regionStats };
 }
@@ -161,17 +165,68 @@ function renderRegionTable(stats) {
 
     let html = '';
     sorted.forEach(([region, data]) => {
-        // 将吨转换为万吨显示
-        const outputInWanTon = (data.sugarOutput / 10000).toFixed(0);
+        // 将吨转换为万吨显示（统一保留2位小数，末尾补0）
+        const sugarOutputWanTon = (data.sugarOutput / 10000).toFixed(2);
+        const caneVolumeWanTon = (typeof data.caneVolume === 'number')
+            ? (data.caneVolume / 10000).toFixed(2)
+            : '—';
+        const factoriesText = (typeof data.factories === 'number') ? data.factories : '—';
+        const seasonText = data.season || '—';
         html += `
             <tr>
                 <td><strong>${region}</strong></td>
-                <td>${outputInWanTon}</td>
-                <td>${data.factories}</td>
+                <td>${sugarOutputWanTon}</td>
+                <td>${caneVolumeWanTon}</td>
+                <td>${factoriesText}</td>
+                <td>${seasonText}</td>
             </tr>
         `;
     });
     tbody.innerHTML = html;
+}
+
+function renderRegionSummary(stats) {
+    const seasonLabelEl = document.getElementById('regionSeasonLabel');
+    const gxTotalSugarEl = document.getElementById('gxTotalSugarWanTon');
+    const regionShareEl = document.getElementById('regionSharePct');
+    const regionNoteEl = document.getElementById('regionCaneVolumeNote');
+
+    if (!seasonLabelEl && !gxTotalSugarEl && !regionShareEl && !regionNoteEl) return;
+
+    const entries = Object.entries(stats || {});
+    const seasons = [...new Set(entries.map(([, d]) => d.season).filter(Boolean))];
+    const season = seasons.length === 1 ? seasons[0] : (seasons.length === 0 ? '—' : '混合口径');
+
+    if (seasonLabelEl) seasonLabelEl.textContent = season;
+
+    // 全区总产糖（万吨）：优先从 yearlyProductionData 中取同榨季口径
+    let gxTotalSugarWanTon = null;
+    if (typeof yearlyProductionData !== 'undefined' && season && season !== '—' && season !== '混合口径') {
+        const hit = yearlyProductionData.find(x => x.season === season);
+        if (hit && typeof hit.sugarOutput === 'number') gxTotalSugarWanTon = hit.sugarOutput;
+    }
+
+    if (gxTotalSugarEl) gxTotalSugarEl.textContent = (gxTotalSugarWanTon === null) ? '—' : gxTotalSugarWanTon.toFixed(2);
+
+    const selectedCitiesSugarWanTon = entries
+        .map(([, d]) => (typeof d.sugarOutput === 'number' ? d.sugarOutput / 10000 : 0))
+        .reduce((a, b) => a + b, 0);
+
+    if (regionShareEl) {
+        if (gxTotalSugarWanTon === null || gxTotalSugarWanTon <= 0) {
+            regionShareEl.textContent = '—';
+        } else {
+            regionShareEl.textContent = ((selectedCitiesSugarWanTon / gxTotalSugarWanTon) * 100).toFixed(2) + '%';
+        }
+    }
+
+    if (regionNoteEl) {
+        const noteParts = entries
+            .map(([, d]) => d.caneVolumeType)
+            .filter(Boolean);
+        const uniqueNotes = [...new Set(noteParts)];
+        regionNoteEl.textContent = uniqueNotes.length ? `糖料蔗量口径：${uniqueNotes.join(' / ')}` : '';
+    }
 }
 
 // 渲染历年数据表格
@@ -377,7 +432,10 @@ function renderRegionChart() {
         regionSugarData.forEach(item => {
             stats[item.region] = {
                 sugarOutput: item.sugarOutput,
+                caneVolume: item.caneVolume,
+                caneVolumeType: item.caneVolumeType,
                 factories: item.factories,
+                season: item.season,
                 caneArea: item.caneArea
             };
         });
@@ -388,6 +446,7 @@ function renderRegionChart() {
 
     const labels = sorted.map(item => item[0].replace('市', ''));
     const data = sorted.map(item => item[1].sugarOutput / 10000); // 转换为万吨
+    const meta = sorted.map(item => item[1]);
 
     new Chart(ctx.getContext('2d'), {
         type: 'bar',
@@ -432,7 +491,17 @@ function renderRegionChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `产糖量: ${context.parsed.x.toFixed(1)} 万吨`;
+                            const idx = context.dataIndex;
+                            const d = meta[idx] || {};
+                            const sugarText = `${context.parsed.x.toFixed(2)} 万吨`;
+                            const caneText = (typeof d.caneVolume === 'number')
+                                ? `；${d.caneVolumeType || '糖料蔗'} ${(d.caneVolume / 10000).toFixed(2)} 万吨`
+                                : '';
+                            const factoriesText = (typeof d.factories === 'number')
+                                ? `；制糖企业/糖厂 ${d.factories} 家`
+                                : '';
+                            const seasonText = d.season ? `（${d.season} 榨季）` : '';
+                            return `食糖 ${sugarText}${caneText}${factoriesText}${seasonText}`;
                         }
                     }
                 }
@@ -665,7 +734,7 @@ function renderGreenDevelopmentChart() {
         item.isTarget ? 'rgba(255, 193, 7, 1)' : 'rgba(25, 135, 84, 1)'
     );
 
-    const chart = new Chart(ctx.getContext('2d'), {
+    new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: labels,
@@ -719,36 +788,6 @@ function renderGreenDevelopmentChart() {
                 }
             }
         },
-        plugins: [
-            {
-                id: 'textCenter',
-                afterDatasetsDraw(chart) {
-                    const {ctx, data, chartArea: {left, top, width, height}} = chart;
-                    ctx.save();
-
-                    data.datasets.forEach((dataset, datasetIndex) => {
-                        const meta = chart.getDatasetMeta(datasetIndex);
-                        meta.data.forEach((bar, index) => {
-                            const value = dataset.data[index];
-
-                            // 绘制数值标签在柱子顶部
-                            ctx.fillStyle = '#000';
-                            ctx.font = 'bold 16px Arial';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'bottom';
-                            ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
-                            ctx.shadowBlur = 3;
-                            ctx.shadowOffsetX = 0;
-                            ctx.shadowOffsetY = 0;
-
-                            // 文字位置：柱子顶部上方8像素
-                            ctx.fillText(value + '%', bar.x, bar.y - 8);
-                        });
-                    });
-                    ctx.restore();
-                }
-            }
-        ]
     });
 }
 

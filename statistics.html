@@ -151,34 +151,43 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-header bg-success text-white">
                             <h5 class="mb-0"><i class="bi bi-geo-alt"></i> 主要产糖市统计</h5>
-                            <small class="opacity-75">仅展示有官方来源确认的数据</small>
+                            <small class="opacity-75">仅展示有官方来源确认的数据（榨季口径见下方）</small>
                         </div>
                         <div class="card-body">
                             <canvas id="regionChart"></canvas>
                         </div>
                         <div class="card-body border-top">
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>地区</th>
-                                        <th>产糖量(万吨)</th>
-                                        <th>糖厂数量</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="regionStatsTable">
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>地区</th>
+                                            <th>食糖产量(万吨)</th>
+                                            <th>糖料蔗量(万吨)</th>
+                                            <th>制糖企业/糖厂(家)</th>
+                                            <th>榨季</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="regionStatsTable">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="card-body border-top">
                             <div class="alert alert-info mb-0 py-2">
                                 <small>
                                     <i class="bi bi-info-circle"></i>
-                                    <strong>全区合计：</strong>74家糖厂，产糖646.5万吨<br>
-                                    崇左、来宾两市产糖量占全区52.6%
+                                    <strong>全区合计（<span id="regionSeasonLabel">—</span>榨季）：</strong>产糖<span id="gxTotalSugarWanTon">—</span>万吨<br>
+                                    崇左、来宾两市食糖产量占全区<span id="regionSharePct">—</span><br>
+                                    <span id="regionCaneVolumeNote" class="text-muted"></span>
                                 </small>
                             </div>
                             <p class="text-muted small mb-0 mt-2">
-                                <i class="bi bi-link-45deg"></i> 数据来源：<a href="https://www.yntw.com/2024/11/32154.html" target="_blank">糖网</a>、<a href="https://www.hisugar.com/home/articleContent?id=2024111809040048548894" target="_blank">泛糖科技</a>
+                                <i class="bi bi-link-45deg"></i> 数据来源：
+                                <a href="https://nynct.gxzf.gov.cn/xwdt/gxlb/cz/t18697503.shtml" target="_blank">广西农业农村厅（崇左）</a>、
+                                <a href="https://gxxf.gov.cn/zwgk/zdlyxxgk/ny/ntjjs/t19789993.shtml" target="_blank">自治区政府门户（来宾）</a>、
+                                <a href="https://njfwzx.gxzf.gov.cn/gxnjh/t18443141.shtml" target="_blank">广西农机化服务中心（来宾制糖企业数）</a>、
+                                <span class="text-muted">全区总量：取本页“广西糖业历年产量趋势”同榨季口径（详见该表/图的数据来源说明）</span>
                             </p>
                         </div>
                     </div>
