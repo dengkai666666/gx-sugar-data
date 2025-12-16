@@ -325,16 +325,10 @@ const yearlyProductionData = [
 // 广西糖业科技创新指标（公开口径：规划基数 + 最新口径）
 // 数据来源：央广网、广西发改委新闻发布会
 const techInnovationData = [
-    {
-        year: "2019/20",
-        mechanizationRate: 63, // 规划基数口径
-        varietyCoverage: 93 // 规划基数口径
-    },
-    {
-        year: "2024/25",
-        mechanizationRate: 72.12, // 最新公开口径：央广网报道"耕种收综合机械化水平达72.12%"
-        varietyCoverage: 99 // 最新公开口径：央广网报道"良种覆盖率接近99%"
-    }
+    { year: "2020/21", mechanizationRate: 66.60, varietyCoverage: 98.00 },
+    { year: "2022/23", mechanizationRate: 69.07, varietyCoverage: 98.00 },
+    { year: "2023/24", mechanizationRate: 70.84, varietyCoverage: 98.62 },
+    { year: "2024/25", mechanizationRate: 72.12, varietyCoverage: 98.70 }
 ];
 
 // 广西糖业价值高端化指标
