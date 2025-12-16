@@ -58,6 +58,7 @@ function renderChartsProgressively() {
         renderSectorChart,
         renderRegionChart,
         renderAreaChart,
+        renderPlantingAreaTable,
         renderTechInnovationChart,
         renderValueUpgradingChart,
         renderGreenDevelopmentChart,
@@ -533,26 +534,41 @@ function renderRegionChart() {
     });
 }
 
-// 渲染种植面积分布图
+// 渲染种植面积分布图（2023/24 vs 2024/25对比）
 function renderAreaChart() {
     const ctx = document.getElementById('areaChart');
-    if (!ctx || typeof regionSugarData === 'undefined') return;
+    if (!ctx || typeof canePlantingAreaData === 'undefined') return;
 
-    const sorted = [...regionSugarData].sort((a, b) => b.caneArea - a.caneArea);
+    // 过滤掉"全区总计"，只显示各市数据
+    const citiesData = canePlantingAreaData.filter(item => item.region !== '全区总计');
+
+    // 按2024年面积降序排列
+    const sorted = [...citiesData].sort((a, b) => b.area2024 - a.area2024);
+
     const labels = sorted.map(item => item.region.replace('市', ''));
-    const data = sorted.map(item => item.caneArea);
+    const data2023 = sorted.map(item => item.area2023);
+    const data2024 = sorted.map(item => item.area2024);
 
     new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: labels,
-            datasets: [{
-                label: '种植面积(万亩)',
-                data: data,
-                backgroundColor: 'rgba(32, 201, 151, 0.8)',
-                borderColor: 'rgba(32, 201, 151, 1)',
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    label: '2023/24榨季',
+                    data: data2023,
+                    backgroundColor: 'rgba(32, 201, 151, 0.7)',
+                    borderColor: 'rgba(32, 201, 151, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: '2024/25榨季',
+                    data: data2024,
+                    backgroundColor: 'rgba(25, 135, 84, 0.8)',
+                    borderColor: 'rgba(25, 135, 84, 1)',
+                    borderWidth: 1
+                }
+            ]
         },
         options: {
             responsive: true,
@@ -568,18 +584,54 @@ function renderAreaChart() {
             },
             plugins: {
                 legend: {
-                    display: false
+                    position: 'top',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 }
+                    }
                 },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `种植面积: ${context.parsed.y} 万亩`;
+                            return `${context.dataset.label}: ${context.parsed.y}万亩`;
+                        },
+                        afterLabel: function(context) {
+                            const cityIndex = context.dataIndex;
+                            const cityData = sorted[cityIndex];
+                            if (cityData && context.datasetIndex === 1) {
+                                return `同比增长: +${cityData.growth}万亩 (+${cityData.growthRate.toFixed(2)}%)`;
+                            }
                         }
                     }
                 }
             }
         }
     });
+}
+
+// 渲染种植面积详细表格
+function renderPlantingAreaTable() {
+    const tbody = document.getElementById('plantingAreaTable');
+    if (!tbody || typeof canePlantingAreaData === 'undefined') return;
+
+    let html = '';
+    canePlantingAreaData.forEach((item) => {
+        const isTotal = item.region === '全区总计';
+        const rowClass = isTotal ? 'table-success fw-bold' : '';
+        const estimateTag = item.isEstimate ? ' <span class="badge bg-warning text-dark">估算</span>' : '';
+
+        html += `
+            <tr class="${rowClass}">
+                <td>${item.region}${estimateTag}</td>
+                <td>${item.area2023}</td>
+                <td>${item.area2024}</td>
+                <td class="text-success">+${item.growth}</td>
+                <td class="text-success">+${item.growthRate.toFixed(2)}%</td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
 }
 
 // 格式化数字
@@ -821,24 +873,24 @@ function renderIndustrialParkChart() {
     const ctx = document.getElementById('industrialParkChart');
     if (!ctx || typeof industrialParkData === 'undefined') return;
 
-    const years = industrialParkData.map(item => item.year);
+    const labels = industrialParkData.map(item => item.isTarget ? `${item.year}（目标）` : `${item.year}`);
     const values = industrialParkData.map(item => item.industrialOutput);
+    const colors = industrialParkData.map(item =>
+        item.isTarget ? 'rgba(255, 193, 7, 0.7)' : 'rgba(25, 135, 84, 0.7)'
+    );
+    const borderColors = industrialParkData.map(item =>
+        item.isTarget ? 'rgba(255, 193, 7, 1)' : 'rgba(25, 135, 84, 1)'
+    );
 
     new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
-            labels: years,
+            labels: labels,
             datasets: [{
                 label: '工业产值(亿元)',
                 data: values,
-                backgroundColor: [
-                    'rgba(25, 135, 84, 0.7)',
-                    'rgba(13, 110, 253, 0.7)',
-                    'rgba(32, 201, 151, 0.7)',
-                    'rgba(255, 193, 7, 0.7)',
-                    'rgba(220, 53, 69, 0.7)'
-                ],
-                borderColor: 'rgba(25, 135, 84, 1)',
+                backgroundColor: colors,
+                borderColor: borderColors,
                 borderWidth: 1
             }]
         },
@@ -861,12 +913,10 @@ function renderIndustrialParkChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            const year = context.label;
                             const value = context.parsed.y;
-                            let suffix = '';
-                            if (year >= 2025) {
-                                suffix = ' (目标值)';
-                            }
+                            const index = context.dataIndex;
+                            const point = (Array.isArray(industrialParkData) ? industrialParkData[index] : null) || {};
+                            const suffix = point.isTarget ? '（目标）' : '';
                             return `工业产值: ${value}亿元${suffix}`;
                         }
                     }

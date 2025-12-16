@@ -201,10 +201,41 @@
                 <div class="col-12">
                     <div class="card shadow-sm">
                         <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="bi bi-map"></i> 各市甘蔗种植面积分布（万亩）</h5>
+                            <h5 class="mb-0"><i class="bi bi-map"></i> 广西主要产糖市甘蔗种植面积对比（2023/24 vs 2024/25榨季）</h5>
                         </div>
                         <div class="card-body">
                             <canvas id="areaChart" height="100"></canvas>
+                        </div>
+                        <div class="card-body border-top">
+                            <table class="table table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>地区</th>
+                                        <th>2023/24(万亩)</th>
+                                        <th>2024/25(万亩)</th>
+                                        <th>增长(万亩)</th>
+                                        <th>增长率</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="plantingAreaTable">
+                                    <!-- 由JS动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-body border-top">
+                            <p class="text-muted small mb-0">
+                                <i class="bi bi-clock-history"></i>
+                                数据来源：广西农业农村厅、统计局、各市政府公开数据 |
+                                更新时间：2024年12月
+                            </p>
+                            <div class="alert alert-warning mb-0 mt-2 py-2">
+                                <small>
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>数据说明：</strong>
+                                    百色、河池数据为估算值（标注70+、85+）；
+                                    其他城市数据均来自官方公开渠道
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -293,7 +293,19 @@ const regionSugarData = [
 ];
 // 注：其他地市产量数据若缺少可核验公开来源，不予展示
 
-// “主要产糖市统计”表格用历史数据（支持多榨季行），条形图仍使用 regionSugarData 的口径
+// 广西各市甘蔗种植面积数据（2023/24 vs 2024/25榨季对比）
+// 数据来源：广西农业农村厅、统计局、各市政府公开数据
+const canePlantingAreaData = [
+    { region: "全区总计", area2023: 1124.00, area2024: 1135.00, growth: 11.00, growthRate: 0.98 },
+    { region: "崇左市", area2023: 406.49, area2024: 408.91, growth: 2.42, growthRate: 0.60 },
+    { region: "来宾市", area2023: 180.32, area2024: 182.10, growth: 1.78, growthRate: 0.99 },
+    { region: "南宁市", area2023: 170.00, area2024: 175.30, growth: 5.30, growthRate: 3.12 },
+    { region: "柳州市", area2023: 107.00, area2024: 111.00, growth: 4.00, growthRate: 3.74 },
+    { region: "百色市", area2023: 68.75, area2024: 70.00, growth: 1.25, growthRate: 1.82, isEstimate: true },
+    { region: "河池市", area2023: 77.00, area2024: 85.00, growth: 8.00, growthRate: 10.39, isEstimate: true }
+];
+
+// "主要产糖市统计"表格用历史数据（支持多榨季行），条形图仍使用 regionSugarData 的口径
 // 说明：部分年份仅能核验到“食糖产量”，若缺少糖料蔗量/糖厂数量则用 null
 // 数据来源：
 // - 崇左 2021/22 食糖：中食新闻网转载（崇左市食糖产量约240万吨）
@@ -382,14 +394,13 @@ const greenDevelopmentData = [
 ];
 
 // 广西·中国糖业产业园发展数据
-// 数据来源：广西农科院、新浪财经、泛糖科技
+// 说明：仅展示已对外公开的“实绩/目标口径”。为避免将估算值当作已核验实绩，2019/2020 估算口径不在前端图表展示。
+// 数据来源：新浪财经、泛糖科技；目标口径来源：崇左市招商规划（公开报道）
 // 产业园位于崇左市，总面积53.24平方公里
 const industrialParkData = [
-    { year: 2019, industrialOutput: 45 },    // 估算（基于发展趋势）
-    { year: 2020, industrialOutput: 78 },    // 来源：广西农科院官网确认
-    { year: 2021, industrialOutput: 82.55 }, // 来源：新浪财经、泛糖科技确认
-    { year: 2025, industrialOutput: 500 },   // 中期目标：来源：崇左市招商规划
-    { year: 2030, industrialOutput: 1000 }   // 远期目标：来源：崇左市招商规划
+    { year: 2021, industrialOutput: 82.55, isTarget: false }, // 2021年产值（公开报道口径）
+    { year: 2025, industrialOutput: 500, isTarget: true },    // 2025年目标（亿元）
+    { year: 2030, industrialOutput: 1000, isTarget: true }    // 2030年目标（亿元）
 ];
 
 // 产业规模关键指标
