@@ -173,6 +173,22 @@ body {
 }
 
 /* 导航栏样式 */
+.navbar {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.navbar .navbar-brand {
+    font-size: 1.25rem;
+    line-height: 1.2;
+    font-weight: 500;
+}
+
+.navbar-dark .navbar-nav .nav-link,
+.navbar-dark .navbar-nav .nav-link.active {
+    font-weight: 400;
+}
+
 .navbar-dark .navbar-nav .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 5px;

@@ -2,11 +2,11 @@
 
   let gxPriceChart = null;
 
-  document.addEventListener('DOMContentLoaded', () => {
-    if (typeof gxSugarMarketBrief === 'undefined' || !gxSugarMarketBrief?.prices?.length) {
-      renderEmptyState('No market data available.');
-      return;
-    }
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof gxSugarMarketBrief === 'undefined' || !gxSugarMarketBrief?.prices?.length) {
+    renderEmptyState('\u672a\u627e\u5230\u53ef\u5c55\u793a\u7684\u884c\u60c5\u6570\u636e\u3002');
+    return;
+  }
 
     document.getElementById('seasonLabel').textContent = gxSugarMarketBrief.season || '—';
     document.getElementById('seasonStartLabel').textContent = gxSugarMarketBrief.seasonStart || '—';
@@ -60,14 +60,14 @@
     const latestDeltaEl = document.getElementById('latestDelta');
     const latestSourceEl = document.getElementById('latestSource');
 
-    if (!prices.length) {
-      latestRangeEl.textContent = '—';
-      latestDateEl.textContent = '—';
-      latestMedianEl.textContent = '—';
-      latestDeltaEl.textContent = '—';
-      latestSourceEl.textContent = '—';
-      return;
-    }
+  if (!prices.length) {
+    latestRangeEl.textContent = '—';
+    latestDateEl.textContent = '—';
+    latestMedianEl.textContent = '—';
+    latestDeltaEl.textContent = '—';
+    latestSourceEl.textContent = '—';
+    return;
+  }
 
     const latest = prices[prices.length - 1];
     const prev = prices.length > 1 ? prices[prices.length - 2] : null;
@@ -77,8 +77,8 @@
     const delta = prevMedian === null ? null : latestMedian - prevMedian;
 
     latestRangeEl.textContent = `${formatNumber(latest.low)}–${formatNumber(latest.high)}`;
-    latestDateEl.textContent = `Updated: ${latest.date}`;
-    latestMedianEl.textContent = formatNumber(latestMedian);
+  latestDateEl.textContent = `\u66f4\u65b0\uff1a${latest.date}`;
+  latestMedianEl.textContent = formatNumber(latestMedian);
 
     if (delta === null) {
       latestDeltaEl.textContent = '—';
@@ -89,10 +89,9 @@
       latestDeltaEl.className = `fs-4 fw-bold ${delta > 0 ? 'text-success' : delta < 0 ? 'text-danger' : 'text-muted'}`;
     }
 
-    latestSourceEl.innerHTML = latest.sourceUrl
-      ? `<a class="link-light text-decoration-underline" href="${escapeAttr(latest.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(latest.sourceName ||
-  'Source')}</a>`
-      : escapeHtml(latest.sourceName || 'Source');
+  latestSourceEl.innerHTML = latest.sourceUrl
+    ? `<a class="link-primary text-decoration-underline" href="${escapeAttr(latest.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(latest.sourceName || '\u6765\u6e90')}</a>`
+    : escapeHtml(latest.sourceName || '\u6765\u6e90');
   }
 
   function renderChart(prices) {
@@ -107,16 +106,16 @@
       gxPriceChart = null;
     }
 
-    gxPriceChart = new Chart(canvas.getContext('2d'), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Median (CNY/ton)',
-            data: medians,
-            borderColor: '#198754',
-            backgroundColor: 'rgba(25, 135, 84, 0.12)',
+  gxPriceChart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '\u8f66\u677f\u4ef7\u4e2d\u4f4d\u6570\uff08\u5143/\u5428\uff09',
+          data: medians,
+          borderColor: '#198754',
+          backgroundColor: 'rgba(25, 135, 84, 0.12)',
             borderWidth: 2,
             pointRadius: 3,
             pointHoverRadius: 5,
@@ -130,12 +129,12 @@
         maintainAspectRatio: false,
         plugins: {
           legend: { display: true },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => `Median: ${formatNumber(ctx.parsed.y)} CNY/ton`,
-            },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `\u4e2d\u4f4d\u6570\uff1a${formatNumber(ctx.parsed.y)} \u5143/\u5428`,
           },
         },
+      },
         scales: {
           y: {
             ticks: {
@@ -151,25 +150,25 @@
     const tbody = document.getElementById('priceTableBody');
     if (!tbody) return;
 
-    if (!prices.length) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="4" class="text-center text-muted py-4">
-            <p class="mb-0">No data for current filter.</p>
-          </td>
-        </tr>
-      `;
-      return;
-    }
+  if (!prices.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="text-center text-muted py-4">
+          <p class="mb-0">\u5f53\u524d\u7b5b\u9009\u6761\u4ef6\u4e0b\u6682\u65e0\u6570\u636e\u3002</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
 
     tbody.innerHTML = prices
       .slice()
       .reverse()
       .map((p) => {
         const median = getMedian(p);
-        const source = p.sourceUrl
-          ? `<a href="${escapeAttr(p.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.sourceName || 'Source')}</a>`
-          : escapeHtml(p.sourceName || 'Source');
+      const source = p.sourceUrl
+        ? `<a href="${escapeAttr(p.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.sourceName || '\u6765\u6e90')}</a>`
+        : escapeHtml(p.sourceName || '\u6765\u6e90');
 
         return `
           <tr>
@@ -204,24 +203,24 @@
     return Math.round((Number(p.low) + Number(p.high)) / 2);
   }
 
-  function downloadCsv(prices) {
-    const header = ['date', 'low', 'high', 'median', 'sourceName', 'sourceUrl'];
-    const lines = [header.join(',')];
+function downloadCsv(prices) {
+  const header = ['\u65e5\u671f', '\u6700\u4f4e\u4ef7', '\u6700\u9ad8\u4ef7', '\u4e2d\u4f4d\u6570', '\u6765\u6e90', '\u94fe\u63a5'];
+  const lines = [header.join(',')];
 
-    prices.forEach((p) => {
-      const row = [p.date, p.low, p.high, getMedian(p), csvCell(p.sourceName || ''), csvCell(p.sourceUrl || '')];
-      lines.push(row.join(','));
-    });
+  prices.forEach((p) => {
+    const row = [p.date, p.low, p.high, getMedian(p), csvCell(p.sourceName || ''), csvCell(p.sourceUrl || '')];
+    lines.push(row.join(','));
+  });
 
     const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `gx_sugar_price_${gxSugarMarketBrief.season || 'season'}_${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `\u5e7f\u897f\u7cd6\u5382\u8f66\u677f\u4ef7_${gxSugarMarketBrief.season || '\u69a8\u5b63'}_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 
     URL.revokeObjectURL(url);
   }
