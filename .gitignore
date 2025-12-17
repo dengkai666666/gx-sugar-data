@@ -3,3 +3,5 @@
 .claude
 .playwright-mcp
 vendor
+# Unused local assets
+/images/carousel/桂糖42号.jpg
