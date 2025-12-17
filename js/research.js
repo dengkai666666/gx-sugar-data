@@ -2,7 +2,22 @@
 
 let currentPage = 1;
 const itemsPerPage = 6;
-let filteredData = [...researchData];
+let filteredData = Array.isArray(researchData) ? [...researchData] : [];
+
+function parseSortDate(value) {
+    if (!value) return 0;
+    const parsed = Date.parse(value);
+    if (!Number.isNaN(parsed)) return parsed;
+
+    const text = String(value);
+    const yearMonth = text.match(/(\d{4})\D+(\d{1,2})/);
+    if (yearMonth) return Date.UTC(Number(yearMonth[1]), Number(yearMonth[2]) - 1, 1);
+
+    const yearOnly = text.match(/(\d{4})/);
+    if (yearOnly) return Date.UTC(Number(yearOnly[1]), 0, 1);
+
+    return 0;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     displayResearchList();
@@ -38,6 +53,9 @@ function filterData() {
 // 显示研究成果列表
 function displayResearchList() {
     const container = document.getElementById('researchList');
+
+    // 默认按发布时间倒序
+    filteredData = [...filteredData].sort((a, b) => parseSortDate(b.createdAt) - parseSortDate(a.createdAt));
     
     // 计算分页
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -56,16 +74,21 @@ function displayResearchList() {
     } else {
         let html = '';
         pageData.forEach((item, index) => {
+            const sourceName = item.sourceName || item.source || '';
+            const sourceLink = item.sourceUrl
+                ? `<a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-success ms-1" onclick="event.stopPropagation()">原文</a>`
+                : '';
             html += `
                 <div class="card mb-3 shadow-sm research-card fade-in" style="animation-delay: ${index * 0.1}s" onclick="showResearchDetail(${item.id})">
                     <div class="card-body">
                         <h5 class="card-title text-success">${item.title}</h5>
                         <p class="text-muted small mb-2">
-                            <i class="bi bi-person"></i> ${item.author} · 
                             <i class="bi bi-calendar3"></i> ${item.createdAt}
+                            ${sourceName ? ` · ${sourceName}` : ''}
+                            ${sourceLink}
                         </p>
                         <p class="card-text">${item.abstract}</p>
-                        <a href="#" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); showResearchDetail(${item.id})">
+                        <a href="#" class="btn btn-sm btn-outline-success" onclick="event.preventDefault(); event.stopPropagation(); showResearchDetail(${item.id})">
                             查看详情 <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -86,10 +109,18 @@ function showResearchDetail(id) {
 
     // 填充模态框内容
     document.getElementById('modalTitle').textContent = research.title;
-    document.getElementById('modalAuthor').textContent = research.author;
+    document.getElementById('modalAuthor').textContent = research.author || '';
     document.getElementById('modalDate').textContent = research.createdAt;
     document.getElementById('modalAbstract').textContent = research.abstract;
     document.getElementById('modalContent').innerHTML = formatContent(research.content);
+
+    const sourceEl = document.getElementById('modalSource');
+    if (sourceEl) {
+        const sourceName = research.sourceName || research.source || '';
+        sourceEl.innerHTML = research.sourceUrl
+            ? ` | <i class="bi bi-link-45deg"></i> <a href="${research.sourceUrl}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">${sourceName || '查看原文'}</a>`
+            : (sourceName ? ` | <i class="bi bi-link-45deg"></i> ${sourceName}` : '');
+    }
 
     // 显示模态框
     const modal = new bootstrap.Modal(document.getElementById('researchModal'));

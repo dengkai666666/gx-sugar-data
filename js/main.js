@@ -7,6 +7,21 @@ document.addEventListener('DOMContentLoaded', function() {
     loadLatestResearch();
 });
 
+function parseSortDate(value) {
+    if (!value) return 0;
+    const parsed = Date.parse(value);
+    if (!Number.isNaN(parsed)) return parsed;
+
+    const text = String(value);
+    const yearMonth = text.match(/(\d{4})\D+(\d{1,2})/);
+    if (yearMonth) return Date.UTC(Number(yearMonth[1]), Number(yearMonth[2]) - 1, 1);
+
+    const yearOnly = text.match(/(\d{4})/);
+    if (yearOnly) return Date.UTC(Number(yearOnly[1]), 0, 1);
+
+    return 0;
+}
+
 // 加载统计数据
 function loadStatistics() {
     // 计算企业/基地总数
@@ -76,7 +91,7 @@ function loadAnnouncements() {
     }
 
     let html = '';
-    const sorted = [...announcementData].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+    const sorted = [...announcementData].sort((a, b) => parseSortDate(b.createdAt) - parseSortDate(a.createdAt));
     sorted.slice(0, 3).forEach((announcement, index) => {
         const sourceName = announcement.sourceName || announcement.source || '';
         html += `
@@ -108,7 +123,9 @@ function loadLatestResearch() {
     }
 
     let html = '';
-    researchData.slice(0, 3).forEach((research, index) => {
+    const sorted = [...researchData].sort((a, b) => parseSortDate(b.createdAt) - parseSortDate(a.createdAt));
+    sorted.slice(0, 3).forEach((research, index) => {
+        const sourceName = research.sourceName || research.source || '';
         html += `
             <div class="research-item fade-in" style="animation-delay: ${index * 0.1}s">
                 <h6>
@@ -117,11 +134,10 @@ function loadLatestResearch() {
                     </a>
                 </h6>
                 <p class="text-muted small mb-1">
-                    <i class="bi bi-person"></i> ${research.author} ·
-                    <i class="bi bi-calendar3"></i> ${research.createdAt} ·
-                    <i class="bi bi-info-circle"></i> 详情
+                    <i class="bi bi-calendar3"></i> ${research.createdAt}
+                    ${sourceName ? ` · <span>${sourceName}</span>` : ''}
                 </p>
-                <p class="mb-0">${truncateText(research.abstract, 80)}</p>
+                <p class="mb-0">${truncateText(research.abstract, 90)}</p>
             </div>
         `;
     });
