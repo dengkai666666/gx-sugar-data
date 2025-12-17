@@ -1,4 +1,4 @@
-/* 全局样式 */
+﻿/* 全局样式 */
 :root {
     --primary-color: #198754;
     --secondary-color: #6c757d;
@@ -15,12 +15,26 @@ body {
 
 /* 英雄区域 */
 .hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    background: linear-gradient(135deg, #198754 0%, #0d6832 100%);
+    position: relative;
+    background-image: url("../images/carousel/广西甘蔗田航拍.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     padding: 80px 0;
     margin-bottom: 30px;
 }
 
+.hero-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.hero-section > .container {
+    position: relative;
+    z-index: 1;
+}
 /* 统计卡片 */
 .stat-card {
     border-radius: 10px;
@@ -415,5 +429,7 @@ main {
 .modernization-card canvas {
     max-height: 220px !important;
 }
+
+
 
 
