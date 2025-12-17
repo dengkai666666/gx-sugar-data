@@ -76,14 +76,21 @@ function loadAnnouncements() {
     }
 
     let html = '';
-    announcementData.slice(0, 3).forEach((announcement, index) => {
+    const sorted = [...announcementData].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+    sorted.slice(0, 3).forEach((announcement, index) => {
+        const sourceName = announcement.sourceName || announcement.source || '';
         html += `
             <div class="announcement-item fade-in" style="animation-delay: ${index * 0.1}s">
-                <h6>${announcement.title}</h6>
+                <h6>
+                    <a href="announcement.html?id=${announcement.id}" class="text-decoration-none text-success">
+                        ${announcement.title}
+                    </a>
+                </h6>
                 <p class="text-muted small mb-1">
                     <i class="bi bi-calendar3"></i> ${announcement.createdAt}
+                    ${sourceName ? ` · <span>${sourceName}</span>` : ''}
                 </p>
-                <p class="mb-0">${truncateText(announcement.content, 80)}</p>
+                <p class="mb-0">${truncateText(announcement.content, 90)}</p>
             </div>
         `;
     });

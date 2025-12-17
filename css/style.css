@@ -241,6 +241,11 @@ body {
     margin-bottom: 5px;
 }
 
+.announcement-item h6 a:hover,
+.research-item h6 a:hover {
+    text-decoration: underline !important;
+}
+
 /* 图表容器 */
 canvas {
     max-height: 400px;
