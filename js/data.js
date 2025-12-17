@@ -1,5 +1,26 @@
 ﻿// 广西糖业产业数据（前端展示用）
 // 说明：为保证“可核验口径”，页面中对外展示的关键指标以公开渠道可核验数据为准；缺少权威公开出处的条目不在页面中展示。
+  const gxSugarMarketBrief = {
+    season: "2025/26",
+    seasonStart: "2025-11-15",
+    prices: [
+      { date: "2025-11-24", low: 5430, high: 5450, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/11/35734.html" },
+      { date: "2025-11-25", low: 5430, high: 5470, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/11/35744.html" },
+      { date: "2025-11-26", low: 5420, high: 5480, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/11/35747.html" },
+      { date: "2025-11-27", low: 5430, high: 5480, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/11/35755.html" },
+
+      { date: "2025-12-01", low: 5400, high: 5470, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/12/35770.html" },
+      { date: "2025-12-02", low: 5400, high: 5480, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/12/35781.html" },
+      { date: "2025-12-04", low: 5350, high: 5400, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/12/35801.html" },
+      { date: "2025-12-08", low: 5330, high: 5400, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/12/35833.html" },
+      { date: "2025-12-10", low: 5300, high: 5380, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/12/35846.html" },
+      { date: "2025-12-11", low: 5280, high: 5380, sourceName: "云南糖网", sourceUrl: "https://www.yntw.com/2025/12/35859.html" },
+      { date: "2025-12-15", low: 5280, high: 5380, sourceName: "新浪财经", sourceUrl: "https://finance.sina.com.cn/money/future/agri/2025-12-15/doc-inhawaui2435483.shtml" },
+      { date: "2025-12-16", low: 5230, high: 5340, sourceName: "生意社", sourceUrl: "https://www.100ppi.com/news/detail-20251216-5077103.html" },
+      { date: "2025-12-17", low: 5220, high: 5310, sourceName: "新浪财经", sourceUrl: "https://finance.sina.com.cn/money/future/agri/2025-12-17/doc-inhcaqyr7348849.shtml" },
+    ],
+  };
+
 
 const industryData = [
     {

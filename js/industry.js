@@ -1,184 +1,250 @@
-// 产业数据页面JavaScript逻辑
+  // Guangxi sugar market brief page (workday factory ex-warehouse price range, with median)
 
-let currentPage = 1;
-const itemsPerPage = 10;
-let filteredData = [...industryData];
+  let gxPriceChart = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadRegionFilter();
-    displayIndustryData();
-    
-    // 绑定搜索表单事件
-    document.getElementById('filterForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        filterData();
-    });
-});
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof gxSugarMarketBrief === 'undefined' || !gxSugarMarketBrief?.prices?.length) {
+      renderEmptyState('No market data available.');
+      return;
+    }
 
-// 加载地区筛选选项
-function loadRegionFilter() {
-    const regions = [...new Set(industryData.map(item => item.region))].sort();
-    const select = document.getElementById('regionFilter');
-    
-    regions.forEach(region => {
-        const option = document.createElement('option');
-        option.value = region;
-        option.textContent = region;
-        select.appendChild(option);
-    });
-}
+    document.getElementById('seasonLabel').textContent = gxSugarMarketBrief.season || '—';
+    document.getElementById('seasonStartLabel').textContent = gxSugarMarketBrief.seasonStart || '—';
 
-// 筛选数据
-function filterData() {
-    const searchText = document.getElementById('searchInput').value.toLowerCase();
-    const sector = document.getElementById('sectorFilter').value;
-    const region = document.getElementById('regionFilter').value;
+    setupMonthFilter();
+    bindExport();
 
-    filteredData = industryData.filter(item => {
-        const matchSearch = !searchText || 
-            item.companyName.toLowerCase().includes(searchText) ||
-            item.product.toLowerCase().includes(searchText);
-        
-        const matchSector = !sector || item.sector === sector;
-        const matchRegion = !region || item.region === region;
+    renderAll();
+  });
 
-        return matchSearch && matchSector && matchRegion;
+  function setupMonthFilter() {
+    const select = document.getElementById('monthFilter');
+    const months = getAllMonths(gxSugarMarketBrief.prices);
+
+    months.forEach((month) => {
+      const option = document.createElement('option');
+      option.value = month;
+      option.textContent = month;
+      select.appendChild(option);
     });
 
-    currentPage = 1;
-    displayIndustryData();
-}
+    select.addEventListener('change', () => renderAll());
+  }
 
-// 显示产业数据
-function displayIndustryData() {
-    const tbody = document.getElementById('industryTableBody');
-    const resultCount = document.getElementById('resultCount');
-    
-    // 更新结果数量
-    resultCount.textContent = filteredData.length;
+  function bindExport() {
+    const btn = document.getElementById('exportCsvBtn');
+    btn.addEventListener('click', () => {
+      const rows = getFilteredPrices();
+      downloadCsv(rows);
+    });
+  }
 
-    // 计算分页
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const pageData = filteredData.slice(startIndex, endIndex);
+  function renderAll() {
+    const rows = getFilteredPrices();
+    renderSnapshot(rows);
+    renderChart(rows);
+    renderTable(rows);
+  }
 
-    // 显示数据
-    if (pageData.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center text-muted py-4">
-                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                    <p class="mt-2">未找到符合条件的数据</p>
-                </td>
-            </tr>
-        `;
+  function getFilteredPrices() {
+    const month = document.getElementById('monthFilter').value;
+    const prices = [...gxSugarMarketBrief.prices].sort((a, b) => a.date.localeCompare(b.date));
+    if (!month) return prices;
+    return prices.filter((p) => p.date.startsWith(month));
+  }
+
+  function renderSnapshot(prices) {
+    const latestRangeEl = document.getElementById('latestRange');
+    const latestDateEl = document.getElementById('latestDate');
+    const latestMedianEl = document.getElementById('latestMedian');
+    const latestDeltaEl = document.getElementById('latestDelta');
+    const latestSourceEl = document.getElementById('latestSource');
+
+    if (!prices.length) {
+      latestRangeEl.textContent = '—';
+      latestDateEl.textContent = '—';
+      latestMedianEl.textContent = '—';
+      latestDeltaEl.textContent = '—';
+      latestSourceEl.textContent = '—';
+      return;
+    }
+
+    const latest = prices[prices.length - 1];
+    const prev = prices.length > 1 ? prices[prices.length - 2] : null;
+
+    const latestMedian = getMedian(latest);
+    const prevMedian = prev ? getMedian(prev) : null;
+    const delta = prevMedian === null ? null : latestMedian - prevMedian;
+
+    latestRangeEl.textContent = `${formatNumber(latest.low)}–${formatNumber(latest.high)}`;
+    latestDateEl.textContent = `Updated: ${latest.date}`;
+    latestMedianEl.textContent = formatNumber(latestMedian);
+
+    if (delta === null) {
+      latestDeltaEl.textContent = '—';
+      latestDeltaEl.className = 'fs-4 fw-bold';
     } else {
-        let html = '';
-        pageData.forEach(item => {
-            html += `
-                <tr class="fade-in">
-                    <td><strong>${item.companyName}</strong></td>
-                    <td><span class="badge bg-success">${item.sector}</span></td>
-                    <td>${item.region}</td>
-                    <td>${item.product}</td>
-                    <td>${item.annualOutput ? formatNumber(item.annualOutput) : '-'}</td>
-                    <td>${item.contact}</td>
-                    <td>${item.updatedAt}</td>
-                </tr>
-            `;
-        });
-        tbody.innerHTML = html;
+      const sign = delta > 0 ? '+' : '';
+      latestDeltaEl.textContent = `${sign}${formatNumber(delta)}`;
+      latestDeltaEl.className = `fs-4 fw-bold ${delta > 0 ? 'text-success' : delta < 0 ? 'text-danger' : 'text-muted'}`;
     }
 
-    // 更新分页
-    renderPagination(totalPages);
-}
+    latestSourceEl.innerHTML = latest.sourceUrl
+      ? `<a class="link-light text-decoration-underline" href="${escapeAttr(latest.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(latest.sourceName ||
+  'Source')}</a>`
+      : escapeHtml(latest.sourceName || 'Source');
+  }
 
-// 渲染分页
-function renderPagination(totalPages) {
-    const pagination = document.getElementById('pagination');
-    
-    if (totalPages <= 1) {
-        pagination.innerHTML = '';
-        return;
+  function renderChart(prices) {
+    const canvas = document.getElementById('gxSugarPriceChart');
+    if (!canvas) return;
+
+    const labels = prices.map((p) => p.date.slice(5)); // MM-DD
+    const medians = prices.map((p) => getMedian(p));
+
+    if (gxPriceChart) {
+      gxPriceChart.destroy();
+      gxPriceChart = null;
     }
 
-    let html = '';
+    gxPriceChart = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Median (CNY/ton)',
+            data: medians,
+            borderColor: '#198754',
+            backgroundColor: 'rgba(25, 135, 84, 0.12)',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            tension: 0.25,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `Median: ${formatNumber(ctx.parsed.y)} CNY/ton`,
+            },
+          },
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: (v) => formatNumber(v),
+            },
+          },
+        },
+      },
+    });
+  }
 
-    // 上一页按钮
-    if (currentPage > 1) {
-        html += `
-            <li class="page-item">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-            </li>
+  function renderTable(prices) {
+    const tbody = document.getElementById('priceTableBody');
+    if (!tbody) return;
+
+    if (!prices.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" class="text-center text-muted py-4">
+            <p class="mb-0">No data for current filter.</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = prices
+      .slice()
+      .reverse()
+      .map((p) => {
+        const median = getMedian(p);
+        const source = p.sourceUrl
+          ? `<a href="${escapeAttr(p.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.sourceName || 'Source')}</a>`
+          : escapeHtml(p.sourceName || 'Source');
+
+        return `
+          <tr>
+            <td>${escapeHtml(p.date)}</td>
+            <td>${formatNumber(p.low)}–${formatNumber(p.high)}</td>
+            <td>${formatNumber(median)}</td>
+            <td>${source}</td>
+          </tr>
         `;
-    }
+      })
+      .join('');
+  }
 
-    // 页码按钮
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  function renderEmptyState(message) {
+    const tbody = document.getElementById('priceTableBody');
+    if (!tbody) return;
 
-    if (endPage - startPage < maxVisiblePages - 1) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="text-center text-muted py-4">
+          <p class="mb-0">${escapeHtml(message)}</p>
+        </td>
+     </tr>
+     `;
+  }
 
-    if (startPage > 1) {
-        html += `
-            <li class="page-item">
-                <a class="page-link" href="#" onclick="changePage(1); return false;">1</a>
-            </li>
-        `;
-        if (startPage > 2) {
-            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-    }
+ function getAllMonths(prices) {
+    return Array.from(new Set(prices.map((p) => p.date.slice(0, 7)))).sort();
+  }
 
-    for (let i = startPage; i <= endPage; i++) {
-        html += `
-            <li class="page-item ${i === currentPage ? 'active' : ''}">
-                <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
-            </li>
-        `;
-    }
+  function getMedian(p) {
+    return Math.round((Number(p.low) + Number(p.high)) / 2);
+  }
 
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-        html += `
-            <li class="page-item">
-                <a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
-            </li>
-        `;
-    }
+  function downloadCsv(prices) {
+    const header = ['date', 'low', 'high', 'median', 'sourceName', 'sourceUrl'];
+    const lines = [header.join(',')];
 
-    // 下一页按钮
-    if (currentPage < totalPages) {
-        html += `
-            <li class="page-item">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
-            </li>
-        `;
-    }
+    prices.forEach((p) => {
+      const row = [p.date, p.low, p.high, getMedian(p), csvCell(p.sourceName || ''), csvCell(p.sourceUrl || '')];
+      lines.push(row.join(','));
+    });
 
-    pagination.innerHTML = html;
-}
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
 
-// 切换页码
-function changePage(page) {
-    currentPage = page;
-    displayIndustryData();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gx_sugar_price_${gxSugarMarketBrief.season || 'season'}_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 
-// 格式化数字
-function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+    URL.revokeObjectURL(url);
+  }
 
+  function csvCell(value) {
+    const str = String(value ?? '');
+    if (/["\n,]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
+    return str;
+  }
+
+  function formatNumber(num) {
+    return Number(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function escapeAttr(str) {
+    return escapeHtml(str);
+  }

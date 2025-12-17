@@ -1,4 +1,4 @@
-// 首页JavaScript逻辑 - 广西糖业专用
+﻿// 首页JavaScript逻辑 - 广西糖业专用
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
@@ -137,7 +137,7 @@ function loadLatestResearch() {
                     <i class="bi bi-calendar3"></i> ${research.createdAt}
                     ${sourceName ? ` · <span>${sourceName}</span>` : ''}
                 </p>
-                <p class="mb-0">${truncateText(research.abstract, 90)}</p>
+                <p class="mb-0">${truncateText(normalizePreviewText(research.abstract || research.content || ''), 140)}</p>
             </div>
         `;
     });
@@ -150,3 +150,14 @@ function truncateText(text, maxLength) {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
 }
+
+
+
+
+
+
+function normalizePreviewText(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+

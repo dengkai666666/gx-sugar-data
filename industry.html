@@ -44,65 +44,86 @@
     <main class="py-5">
         <div class="container">
             <h2 class="mb-4">
-                <i class="bi bi-database"></i> 糖业产业数据列表
+                <i class="bi bi-graph-up"></i> 广西糖市行情与产销快报
             </h2>
 
-            <!-- 搜索和筛选 -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-body">
-                    <form id="filterForm" class="row g-3">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="searchInput" placeholder="搜索企业名称或产品...">
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="sectorFilter">
-                                <option value="">所有产业环节</option>
-                                <option value="种植">甘蔗种植</option>
-                                <option value="制糖">制糖生产</option>
-                                <option value="深加工">深加工</option>
-                                <option value="物流">仓储物流</option>
-                                <option value="贸易">贸易销售</option>
-                                <option value="科研">科研机构</option>
-                                <option value="服务">综合服务</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="regionFilter">
-                                <option value="">所有地区</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-success w-100">
-                                <i class="bi bi-search"></i> 搜索
-                            </button>
-                        </div>
-                    </form>
+            <div class="alert alert-light border shadow-sm mb-4">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div class="text-muted small mb-0">
+                        口径：广西糖厂车板价（工作日）｜单位：元/吨｜榨季：<span id="seasonLabel">—</span>（起始 <span id="seasonStartLabel">—</span>）
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="monthFilter" class="text-muted small mb-0">筛选月份</label>
+                        <select class="form-select form-select-sm" id="monthFilter" style="width: 140px;">
+                            <option value="">全部</option>
+                        </select>
+                        <button class="btn btn-outline-success btn-sm" id="exportCsvBtn" type="button">
+                            <i class="bi bi-download"></i> 导出CSV
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- 结果统计 -->
-            <div class="mb-3">
-                <span class="text-muted">共找到 <strong id="resultCount">0</strong> 条记录</span>
+            <!-- 今日快报 -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="text-muted small">最新车板价区间</div>
+                            <div class="fs-4 fw-bold" id="latestRange">—</div>
+                            <div class="text-muted small" id="latestDate">—</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="text-muted small">中位数</div>
+                            <div class="fs-4 fw-bold" id="latestMedian">—</div>
+                            <div class="text-muted small">（用于走势展示）</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="text-muted small">较上一工作日</div>
+                            <div class="fs-4 fw-bold" id="latestDelta">—</div>
+                            <div class="text-muted small" id="latestSource">—</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- 数据表格 -->
+            <!-- 榨季走势 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-activity"></i> 榨季车板价走势（中位数）</h5>
+                    <small class="opacity-75">数据点为工作日公开报价；中位数 = (最低价 + 最高价) / 2</small>
+                </div>
+                <div class="card-body">
+                    <canvas id="gxSugarPriceChart" height="120"></canvas>
+                </div>
+            </div>
+
+            <!-- 明细表 -->
             <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-table"></i> 报价明细</h5>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-success">
                             <tr>
-                                <th>企业/基地名称</th>
-                                <th>产业环节</th>
-                                <th>所在地区</th>
-                                <th>主要产品</th>
-                                <th>年产量(吨)</th>
-                                <th>联系方式</th>
-                                <th>更新时间</th>
+                                <th style="width: 140px;">日期</th>
+                                <th>车板价区间（元/吨）</th>
+                                <th style="width: 120px;">中位数</th>
+                                <th style="width: 180px;">来源</th>
                             </tr>
                         </thead>
-                        <tbody id="industryTableBody">
+                        <tbody id="priceTableBody">
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="4" class="text-center py-5">
                                     <div class="spinner-border text-success" role="status">
                                         <span class="visually-hidden">加载中...</span>
                                     </div>
@@ -111,14 +132,13 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="card-body border-top">
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        说明：本页仅收录公开渠道可核验的“广西糖厂车板价”报价信息；同日不同企业可能存在差异，页面展示为公开报道中的区间。
+                    </p>
+                </div>
             </div>
-
-            <!-- 分页 -->
-            <nav class="mt-4">
-                <ul class="pagination justify-content-center" id="pagination">
-                    <!-- 分页按钮将由JavaScript生成 -->
-                </ul>
-            </nav>
         </div>
     </main>
 
@@ -131,6 +151,7 @@
     </footer>
 
     <script src="vendor/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/chart.js/3.9.1/chart.min.js"></script>
     <script src="js/data.js"></script>
     <script src="js/industry.js"></script>
 </body>
