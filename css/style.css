@@ -16,7 +16,9 @@ body {
 /* 英雄区域 */
 .hero-section {
     position: relative;
-    background-image: url("../images/carousel/广西甘蔗田航拍.jpg");
+    background-image: url("../images/carousel/background.jpg");
+    background-image: -webkit-image-set(url("../images/carousel/background.webp") 1x, url("../images/carousel/background.jpg") 1x);
+    background-image: image-set(url("../images/carousel/background.webp") 1x, url("../images/carousel/background.jpg") 1x);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -445,6 +447,10 @@ main {
 .modernization-card canvas {
     max-height: 220px !important;
 }
+
+
+
+
 
 
 
