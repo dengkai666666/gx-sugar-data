@@ -198,6 +198,12 @@ html {
     font-weight: 500;
 }
 
+.navbar .navbar-brand .brand-mark {
+    width: 22px;
+    height: 22px;
+    vertical-align: -0.125em;
+}
+
 .navbar-dark .navbar-nav .nav-link,
 .navbar-dark .navbar-nav .nav-link.active {
     font-weight: 400;
