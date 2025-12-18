@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
       labels,
       datasets: [
         {
-          label: '\u8f66\u677f\u4ef7\u4e2d\u4f4d\u6570\uff08\u5143/\u5428\uff09',
+          label: '\u53c2\u8003\u4ef7\u4e2d\u4f4d\u6570\uff08\u5143/\u5428\uff09',
           data: medians,
           borderColor: '#198754',
           backgroundColor: 'rgba(25, 135, 84, 0.12)',
@@ -217,7 +217,7 @@ function downloadCsv(prices) {
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = `\u5e7f\u897f\u7cd6\u5382\u8f66\u677f\u4ef7_${gxSugarMarketBrief.season || '\u69a8\u5b63'}_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `\u5e7f\u897f\u7cd6\u5e02\u53c2\u8003\u4ef7_${gxSugarMarketBrief.season || '\u69a8\u5b63'}_${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(a);
   a.click();
   a.remove();

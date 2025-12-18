@@ -44,13 +44,14 @@
     <main class="py-5">
         <div class="container">
             <h2 class="mb-4">
-                <i class="bi bi-graph-up"></i> 广西糖市行情与产销快报
+                <i class="bi bi-graph-up"></i> 广西糖市行情与产销快报（市场参考价）
             </h2>
 
             <div class="alert alert-light border shadow-sm mb-4">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
                     <div class="text-muted small mb-0">
-                        口径：广西糖厂车板价（工作日）｜单位：元/吨｜榨季：<span id="seasonLabel">—</span>（起始 <span id="seasonStartLabel">—</span>）
+                        口径：市场参考价（工作日）｜单位：元/吨｜榨季：<span id="seasonLabel">—</span>（起始 <span id="seasonStartLabel">—</span>）
+                        <strong class="text-danger ms-2">提示：来源为多站点汇总，口径可能不一致，仅供参考。</strong>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <label for="monthFilter" class="text-muted small mb-0">筛选月份</label>
@@ -69,7 +70,7 @@
                 <div class="col-md-4">
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
-                            <div class="text-muted small">最新车板价区间</div>
+                            <div class="text-muted small">最新参考价区间</div>
                             <div class="fs-4 fw-bold" id="latestRange">—</div>
                             <div class="text-muted small" id="latestDate">—</div>
                         </div>
@@ -98,7 +99,7 @@
             <!-- 榨季走势 -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-activity"></i> 榨季车板价走势（中位数）</h5>
+                    <h5 class="mb-0"><i class="bi bi-activity"></i> 榨季参考价走势（中位数）</h5>
                     <small class="opacity-75">数据点为工作日公开报价；中位数 = (最低价 + 最高价) / 2</small>
                 </div>
                 <div class="card-body">
@@ -116,7 +117,7 @@
                         <thead class="table-success">
                             <tr>
                                 <th style="width: 140px;">日期</th>
-                                <th>车板价区间（元/吨）</th>
+                                <th>参考价区间（元/吨）</th>
                                 <th style="width: 120px;">中位数</th>
                                 <th style="width: 180px;">来源</th>
                             </tr>
@@ -135,7 +136,7 @@
                 <div class="card-body border-top">
                     <p class="text-muted small mb-0">
                         <i class="bi bi-info-circle"></i>
-                        说明：本页仅收录公开渠道可核验的“广西糖厂车板价”报价信息；同日不同企业可能存在差异，页面展示为公开报道中的区间。
+                        说明：本页数据为公开渠道“多站点汇总”的市场参考价信息；同日不同来源/口径可能存在差异，页面展示为公开报道中的区间并附来源链接。
                     </p>
                 </div>
             </div>

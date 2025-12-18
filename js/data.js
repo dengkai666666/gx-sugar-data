@@ -1,5 +1,7 @@
 ﻿// 广西糖业产业数据（前端展示用）
 // 说明：为保证“可核验口径”，页面中对外展示的关键指标以公开渠道可核验数据为准；缺少权威公开出处的条目不在页面中展示。
+// Note: Market reference prices aggregated from multiple public sources.
+// "口径" may differ by source; please follow the "来源" links for verification.
   const gxSugarMarketBrief = {
     season: "2025/26",
     seasonStart: "2025-11-15",
