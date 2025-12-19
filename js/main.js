@@ -3,10 +3,70 @@
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
     initHeroTypewriter();
+    initSectorCardShowcase();
     loadStatistics();
     loadAnnouncements();
     loadLatestResearch();
 });
+
+function initSectorCardShowcase() {
+    const container = document.getElementById('sectorCards');
+    if (!container) return;
+
+    // Respect user preference to reduce motion.
+    try {
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return;
+        }
+    } catch (_) {
+        // Ignore matchMedia errors.
+    }
+
+    const cards = Array.from(container.querySelectorAll('.sector-card'));
+    if (!cards.length) return;
+
+    let timer = null;
+    let currentIndex = 0;
+    let paused = false;
+
+    function setActive(index) {
+        cards.forEach((c, i) => c.classList.toggle('active', i === index));
+    }
+
+    function start() {
+        if (timer) return;
+        setActive(currentIndex);
+        timer = window.setInterval(() => {
+            if (paused) return;
+            currentIndex = (currentIndex + 1) % cards.length;
+            setActive(currentIndex);
+        }, 1300);
+    }
+
+    function stop() {
+        if (!timer) return;
+        window.clearInterval(timer);
+        timer = null;
+        cards.forEach((c) => c.classList.remove('active'));
+    }
+
+    // Auto start.
+    start();
+
+    // Pause when tab is hidden.
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            paused = true;
+            cards.forEach((c) => c.classList.remove('active'));
+            return;
+        }
+        paused = false;
+        setActive(currentIndex);
+    });
+
+    // Defensive cleanup (single-page app not used, but safe).
+    window.addEventListener('beforeunload', () => stop());
+}
 
 function initHeroTypewriter() {
     const element = document.getElementById('heroTyping');

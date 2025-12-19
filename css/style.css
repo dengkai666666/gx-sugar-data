@@ -195,7 +195,7 @@ html {
     cursor: pointer;
 }
 
-.sector-card:hover {
+.sector-card.active {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-3px);
     background: linear-gradient(135deg, #198754 0%, #20c997 100%);
@@ -208,8 +208,66 @@ html {
     transition: color 0.3s ease;
 }
 
-.sector-card:hover .sector-icon {
+.sector-card.active .sector-icon {
     color: white;
+}
+
+/* 首页“发展优势”卡片：镜面反光缓慢扫过 */
+.advantage-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.advantage-card::before {
+    content: "";
+    position: absolute;
+    inset: -60%;
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(25, 135, 84, 0) 44%,
+        rgba(25, 135, 84, 0.18) 50%,
+        rgba(25, 135, 84, 0) 56%,
+        transparent 100%
+    );
+    transform: translate3d(-35%, -35%, 0);
+    filter: blur(0.4px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    animation: advantageCardShine 8s ease-in-out infinite;
+}
+
+.advantage-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes advantageCardShine {
+    0%,
+    55% {
+        opacity: 0;
+        transform: translate3d(-35%, -35%, 0);
+    }
+    60% {
+        opacity: 0.55;
+    }
+    78% {
+        opacity: 0.55;
+        transform: translate3d(35%, 35%, 0);
+    }
+    85%,
+    100% {
+        opacity: 0;
+        transform: translate3d(35%, 35%, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .advantage-card::before {
+        animation: none;
+        opacity: 0;
+    }
 }
 
 /* 表格样式 */
