@@ -55,6 +55,47 @@ html {
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
+.hero-typewriter-wrap {
+    position: relative;
+    display: block;
+}
+
+.hero-typewriter-ghost {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    text-shadow: none !important;
+}
+
+.hero-typewriter {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+.hero-typewriter::after {
+    content: "|";
+    margin-left: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    animation: heroTypewriterBlink 1s steps(1, end) infinite;
+}
+
+.hero-typewriter.hero-typewriter--static::after {
+    content: "";
+    animation: none;
+}
+
+@keyframes heroTypewriterBlink {
+    0%,
+    49% {
+        opacity: 1;
+    }
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
 .hero-actions .hero-action-btn {
     display: inline-flex;
     align-items: center;

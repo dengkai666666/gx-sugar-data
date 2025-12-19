@@ -2,10 +2,69 @@
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
+    initHeroTypewriter();
     loadStatistics();
     loadAnnouncements();
     loadLatestResearch();
 });
+
+function initHeroTypewriter() {
+    const element = document.getElementById('heroTyping');
+    if (!element) return;
+
+    // Respect user preference to reduce motion.
+    try {
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            const fullText = (element.getAttribute('data-text') || element.textContent || '').trim();
+            if (fullText) {
+                element.classList.add('hero-typewriter--static');
+                element.textContent = fullText;
+            }
+            return;
+        }
+    } catch (_) {
+        // Ignore matchMedia errors and continue.
+    }
+
+    const fullText = (element.getAttribute('data-text') || element.textContent || '').trim();
+    if (!fullText) return;
+
+    const chars = Array.from(fullText);
+    let index = 0;
+    let deleting = false;
+
+    element.textContent = '';
+
+    const typingDelay = 42;
+    const deletingDelay = 18;
+    const endPause = 1400;
+    const restartPause = 500;
+
+    function tick() {
+        if (!deleting) {
+            index += 1;
+            element.textContent = chars.slice(0, index).join('');
+            if (index >= chars.length) {
+                deleting = true;
+                setTimeout(tick, endPause);
+                return;
+            }
+            setTimeout(tick, typingDelay);
+            return;
+        }
+
+        index -= 1;
+        element.textContent = chars.slice(0, Math.max(0, index)).join('');
+        if (index <= 0) {
+            deleting = false;
+            setTimeout(tick, restartPause);
+            return;
+        }
+        setTimeout(tick, deletingDelay);
+    }
+
+    tick();
+}
 
 function parseSortDate(value) {
     if (!value) return 0;
