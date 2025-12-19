@@ -235,7 +235,7 @@ html {
     opacity: 0;
     pointer-events: none;
     z-index: 0;
-    animation: advantageCardShine 5.2s ease-in-out infinite;
+    animation: advantageCardShine 2s ease-in-out infinite;
 }
 
 .advantage-card .card-body {
@@ -245,18 +245,18 @@ html {
 
 @keyframes advantageCardShine {
     0%,
-    38% {
+    8% {
         opacity: 0;
         transform: translate3d(-35%, -35%, 0);
     }
-    44% {
+    16% {
         opacity: 0.7;
     }
     62% {
         opacity: 0.7;
         transform: translate3d(35%, 35%, 0);
     }
-    70%,
+    72%,
     100% {
         opacity: 0;
         transform: translate3d(35%, 35%, 0);
