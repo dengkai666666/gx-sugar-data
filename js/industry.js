@@ -208,11 +208,18 @@ function downloadCsv(prices) {
   const lines = [header.join(',')];
 
   prices.forEach((p) => {
-    const row = [p.date, p.low, p.high, getMedian(p), csvCell(p.sourceName || ''), csvCell(p.sourceUrl || '')];
+    const row = [
+      csvCell(excelText(p.date)),
+      p.low,
+      p.high,
+      getMedian(p),
+      csvCell(p.sourceName || ''),
+      csvCell(p.sourceUrl || ''),
+    ];
     lines.push(row.join(','));
   });
 
-    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
 
   const a = document.createElement('a');
@@ -223,6 +230,11 @@ function downloadCsv(prices) {
   a.remove();
 
     URL.revokeObjectURL(url);
+  }
+
+  function excelText(value) {
+    // Prevent Excel from auto-formatting dates into numbers (which can show as ####### when column is narrow).
+    return `\t${String(value ?? '')}`;
   }
 
   function csvCell(value) {
