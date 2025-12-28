@@ -2,6 +2,8 @@
 糖业docx(1).pdf
 .claude
 .playwright-mcp
-vendor
 # Unused local assets
-/images/carousel/桂糖42号.jpg
+images/carousel/*.jpg
+images/carousel/README.md
+.txt
+.pdf
